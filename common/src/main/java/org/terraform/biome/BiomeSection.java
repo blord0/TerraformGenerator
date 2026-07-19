@@ -11,6 +11,7 @@ import org.terraform.utils.noise.FastNoise;
 import org.terraform.utils.noise.FastNoise.NoiseType;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class BiomeSection {
     // A BiomeSection is 128 blocks wide (Default of bitshift 7).
@@ -28,6 +29,22 @@ public class BiomeSection {
     private @Nullable BiomeBank biome;
     private FastNoise shapeNoise;
 
+    // Macro warp bends the climate/ocean/mountain sampling fields without moving
+    // the physical BiomeSection used by SectionBlurCache.
+    private static final float MACRO_WARP_FREQUENCY = 0.001f;
+    private static final double MACRO_WARP_STRENGTH = 220.0;
+
+    // Detail warp breaks up smaller local patterns.
+    private static final float DETAIL_WARP_FREQUENCY = 0.004f;
+    private static final double DETAIL_WARP_STRENGTH = 55.0;
+
+    // Shift section dominance centres only a limited amount. Keeping this below
+    // half a section ensures only nearby physical sections can dominate.
+    private static final double DOMINANCE_CENTER_SHIFT_FACTOR = 0.32;
+
+    private static final ConcurrentHashMap<String, BiomeWarpNoise> WARP_NOISE =
+            new ConcurrentHashMap<>();
+
     /**
      * Block x and z
      */
@@ -41,6 +58,81 @@ public class BiomeSection {
         this.x = x;
         this.z = z;
         this.tw = tw;
+    }
+
+    private static final class BiomeWarpNoise {
+        private final FastNoise macroX;
+        private final FastNoise macroZ;
+        private final FastNoise detailX;
+        private final FastNoise detailZ;
+        private final FastNoise centerX;
+        private final FastNoise centerZ;
+
+        private BiomeWarpNoise(long seed) {
+            macroX = createNoise((int) (seed ^ 0x4F1BBCDCL), MACRO_WARP_FREQUENCY, 2);
+            macroZ = createNoise((int) (seed ^ 0x7A2D8E91L), MACRO_WARP_FREQUENCY, 2);
+            detailX = createNoise((int) (seed ^ 0x19C6F35BL), DETAIL_WARP_FREQUENCY, 3);
+            detailZ = createNoise((int) (seed ^ 0x63E8A7D2L), DETAIL_WARP_FREQUENCY, 3);
+
+            // Section-centre movement uses broader noise so neighbouring centres
+            // drift coherently rather than jittering independently.
+            centerX = createNoise((int) (seed ^ 0x31A54C79L), 0.0025f, 2);
+            centerZ = createNoise((int) (seed ^ 0x6D2B79F1L), 0.0025f, 2);
+        }
+    }
+
+    private static @NotNull FastNoise createNoise(int seed, float frequency, int octaves) {
+        FastNoise noise = new FastNoise(seed);
+        noise.SetNoiseType(NoiseType.SimplexFractal);
+        noise.SetFrequency(frequency);
+        noise.SetFractalOctaves(octaves);
+        return noise;
+    }
+
+    private static @NotNull BiomeWarpNoise getWarpNoise(@NotNull TerraformWorld tw) {
+        String key = tw.getName() + ":" + tw.getSeed();
+        return WARP_NOISE.computeIfAbsent(key, ignored -> new BiomeWarpNoise(tw.getSeed()));
+    }
+
+    /**
+     * Returns warped block coordinates used only when sampling climate,
+     * ocean and mountain noise. Physical section coordinates are unchanged.
+     */
+    private int @NotNull [] getWarpedSampleBlockCoords() {
+        BiomeWarpNoise noise = getWarpNoise(tw);
+        SimpleLocation physicalCenter = getCenter();
+        int rawX = physicalCenter.getX();
+        int rawZ = physicalCenter.getZ();
+
+        double offsetX =
+                noise.macroX.GetNoise(rawX, rawZ) * MACRO_WARP_STRENGTH
+                + noise.detailX.GetNoise(rawX, rawZ) * DETAIL_WARP_STRENGTH;
+
+        double offsetZ =
+                noise.macroZ.GetNoise(rawX, rawZ) * MACRO_WARP_STRENGTH
+                + noise.detailZ.GetNoise(rawX, rawZ) * DETAIL_WARP_STRENGTH;
+
+        return new int[] {
+                rawX + (int) Math.round(offsetX),
+                rawZ + (int) Math.round(offsetZ)
+        };
+    }
+
+    /**
+     * Returns a safely shifted centre used only for dominance comparisons.
+     * Bounds and cache ownership still use the physical section.
+     */
+    private @NotNull SimpleLocation getDominanceCenter() {
+        BiomeWarpNoise noise = getWarpNoise(tw);
+        SimpleLocation center = getCenter();
+        double maxShift = sectionWidth * DOMINANCE_CENTER_SHIFT_FACTOR;
+
+        int shiftedX = center.getX()
+                + (int) Math.round(noise.centerX.GetNoise(center.getX(), center.getZ()) * maxShift);
+        int shiftedZ = center.getZ()
+                + (int) Math.round(noise.centerZ.GetNoise(center.getX(), center.getZ()) * maxShift);
+
+        return new SimpleLocation(shiftedX, 0, shiftedZ);
     }
 
     /**
@@ -122,8 +214,8 @@ public class BiomeSection {
         SimpleLocation target = new SimpleLocation(x, 0, z);
         BiomeSection homeSection = BiomeBank.getBiomeSectionFromBlockCoords(tw, x, z);
 
-        // Don't calculate if distance is very close to center
-        if (target.distanceSqr(homeSection.getCenter()) <= dominanceThresholdSquared) {
+        // Use the safely shifted dominance centre for this optimisation.
+        if (target.distanceSqr(homeSection.getDominanceCenter()) <= dominanceThresholdSquared) {
             return homeSection;
         }
 
@@ -172,8 +264,12 @@ public class BiomeSection {
     }
 
     private @NotNull BiomeBank parseBiomeBank() {
-        temperature = 3f * 2.5f * tw.getTemperatureOctave().GetNoise(this.x, this.z);
-        moisture = 3f * 2.5f * tw.getMoistureOctave().GetNoise(this.x, this.z);
+        int[] warped = getWarpedSampleBlockCoords();
+        int sampleSectionX = warped[0] >> bitshifts;
+        int sampleSectionZ = warped[1] >> bitshifts;
+
+        temperature = 3f * 2.5f * tw.getTemperatureOctave().GetNoise(sampleSectionX, sampleSectionZ);
+        moisture = 3f * 2.5f * tw.getMoistureOctave().GetNoise(sampleSectionX, sampleSectionZ);
 
         return BiomeBank.selectBiome(
                 this,
@@ -191,17 +287,16 @@ public class BiomeSection {
     }
 
     public float getDominanceBasedOnRadius(int blockX, int blockZ) {
-        SimpleLocation center = this.getCenter();
+        SimpleLocation center = this.getDominanceCenter();
 
         int xOffset = center.getX() - blockX;
         int zOffset = center.getZ() - blockZ;
 
         double equationResult = Math.pow(xOffset, 2) / Math.pow(radius, 2)
                                 + Math.pow(zOffset, 2) / Math.pow(radius, 2)
-                                + 0.7 * shapeNoise.GetNoise(xOffset, zOffset);
+                                + 0.9 * shapeNoise.GetNoise(xOffset, zOffset);
 
-        return (float) (1 - 1 * (equationResult));
-
+        return (float) (1 - equationResult);
     }
 
     public @NotNull SimpleLocation getCenter() {
@@ -355,10 +450,18 @@ public class BiomeSection {
     }
 
     public double getOceanLevel() {
-        return tw.getOceanicNoise().GetNoise(x, z) * 50.0;
+        int[] warped = getWarpedSampleBlockCoords();
+        return tw.getOceanicNoise().GetNoise(
+                warped[0] >> bitshifts,
+                warped[1] >> bitshifts
+        ) * 50.0;
     }
 
     public double getMountainLevel() {
-        return tw.getMountainousNoise().GetNoise(x, z) * 50.0;
+        int[] warped = getWarpedSampleBlockCoords();
+        return tw.getMountainousNoise().GetNoise(
+                warped[0] >> bitshifts,
+                warped[1] >> bitshifts
+        ) * 50.0;
     }
 }

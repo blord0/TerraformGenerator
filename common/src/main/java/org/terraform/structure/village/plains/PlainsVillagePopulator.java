@@ -30,6 +30,7 @@ public class PlainsVillagePopulator extends VillagePopulator {
     public @NotNull Material woodLeaves = Material.OAK_LEAVES;
     public @NotNull Material woodPressurePlate = Material.OAK_PRESSURE_PLATE;
     public @NotNull String wood = "oak_";
+    public int VILLAGE_SIZE = 300;
 
     @Override
     public void populate(@NotNull TerraformWorld tw, @NotNull PopulatorDataAbstract data) {
@@ -129,14 +130,15 @@ public class PlainsVillagePopulator extends VillagePopulator {
 
         // Re-get x and z because they change after ensureFarmHouseEntrance.
         // 13 because that's the width of the townhall.
+        BlockFace[] startSides = BlockUtils.getAdjacentFaces(pathStart);
         PlainsPathRecursiveSpawner spawner = new PlainsPathRecursiveSpawner(new SimpleBlock(
                 data,
                 townHall.getX() + pathStart.getModX() * 13,
                 y,
                 townHall.getZ() + pathStart.getModZ() * 13
-        ), 100, BlockUtils.getAdjacentFaces(pathStart));
+        ), VILLAGE_SIZE, pathStart, startSides[0], startSides[1]);
         spawner.forceRegisterRoom(townHall);
-        spawner.setVillageDensity(0.7);
+        spawner.setVillageDensity(0.82);
         spawner.setPathPop(new PlainsVillagePathPopulator(tw, spawner.getRooms().values(), random));
         spawner.registerRoomPopulator(new PlainsVillageStandardHousePopulator(this, random, false, false));
         spawner.registerRoomPopulator(new PlainsVillageTemplePopulator(this, random, false, true));

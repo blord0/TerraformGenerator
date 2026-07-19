@@ -16,12 +16,12 @@ public class NoiseCaveRegistry {
 
     public NoiseCaveRegistry(TerraformWorld tw) {
         this.tw = tw;
-        this.noiseCaveCarvers = new NoiseCaveAbstract[] {
-                new CheeseCave()
-        };
-        this.generateCaveCarvers = new NoiseCaveAbstract[] {
-                new NoiseRavine()
-        };
+
+        // Disable TerraformGenerator's custom pocket caves.
+        this.noiseCaveCarvers = new NoiseCaveAbstract[0];
+
+        // Disable TerraformGenerator's custom ravines.
+        this.generateCaveCarvers = new NoiseCaveAbstract[0];
     }
 
     public boolean canNoiseCarve(int x, int y, int z, double height, ChunkCache cache) {

@@ -267,7 +267,7 @@ public class TerraformGenerator extends ChunkGenerator {
     }
 
     public boolean shouldGenerateCaves() {
-        return false;
+        return true;
     }
 
     public boolean shouldGenerateDecorations() {

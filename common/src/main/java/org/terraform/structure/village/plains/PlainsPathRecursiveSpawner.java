@@ -22,8 +22,17 @@ import java.util.*;
 
 public class PlainsPathRecursiveSpawner {
 
-    private static final int minPathLength = 25;
-    private static final int maxPathLength = 35;
+	private static final int MIN_PATH_LENGTH = 10;                 // Shortest road segment
+	private static final int MAX_PATH_LENGTH = 24;                 // Longest road segment
+	private static final int MIN_BRANCH_DISTANCE = 6;             // Minimum spacing between branch attempts
+	private static final int MAX_BRANCH_DISTANCE = 14;             // Maximum spacing between branch attempts
+	private static final int MAX_CROSSROADS = 180;                  // Maximum number of junctions
+	private static final int MAX_PATH_BLOCKS = 12000;               // Maximum total road blocks
+	private static final int MAX_ROOMS = 350;                      // Maximum building plots
+	private static final int BRANCH_CHANCE_PERCENT = 85;           // Chance a branch attempt succeeds
+	private static final int T_JUNCTION_CHANCE_PERCENT = 45;       // Chance to branch on both sides
+	private static final int MEANDER_CHANCE_PERCENT = 35;          // Chance roads wobble sideways
+	private static final int CONTINUE_STRAIGHT_CHANCE_PERCENT = 60;// Chance roads stay straight after a segment
     private final int range;
     private final ArrayList<RoomPopulatorAbstract> validRooms = new ArrayList<>();
     private final @NotNull SimpleBlock core;
@@ -45,82 +54,161 @@ public class PlainsPathRecursiveSpawner {
         this.core = core;
     }
 
-    private void advanceCrossRoad(@NotNull Random random, @NotNull CrossRoad target, @NotNull BlockFace direction) {
+
+    private void advanceCrossRoad(@NotNull Random random,
+                                  @NotNull CrossRoad target,
+                                  @NotNull BlockFace direction)
+    {
         target.satisfiedFaces.add(direction);
 
-        boolean cull = false;
+        SimpleLocation lastPlaced = new SimpleLocation(target.loc);
         SimpleLocation loc = new SimpleLocation(target.loc).getRelative(direction);
-        int lastCrossroad = 0;
-        int edgeTurns = 0;
-        while (!cull) {
+        int branchCountdown = GenUtils.randInt(random, MIN_BRANCH_DISTANCE, MAX_BRANCH_DISTANCE);
+        int meanderCountdown = GenUtils.randInt(random, 4, 9);
+        int segmentCount = 0;
 
-            // Advance the path forward in this arbitrary direction.
-            for (int i = 0; i < GenUtils.randInt(random, minPathLength, maxPathLength); i++) {
+        while (segmentCount < 10 && path.size() < MAX_PATH_BLOCKS) {
+            int segmentLength = GenUtils.randInt(random, MIN_PATH_LENGTH, MAX_PATH_LENGTH);
+            boolean blocked = false;
 
-                if (isLocationValid(loc)) {
-                    path.put(loc, direction);
+            for (int i = 0; i < segmentLength && path.size() < MAX_PATH_BLOCKS; i++) {
+                if (!isLocationValid(loc)) {
+                    blocked = true;
+                    break;
+                }
 
-                    if (GenUtils.chance(random, (int) (villageDensity * 10000), 10000)) {
-                        BlockFace adjDir = BlockUtils.getAdjacentFaces(direction)[random.nextInt(2)];
-                        SimpleLocation adj = loc.getRelative(adjDir);
-                        if (isLocationValid(adj)) {
-                            BlockFace rF = adjDir.getOppositeFace();
-                            int minRoomWidth = this.minRoomWidth;
-                            int maxRoomWidth = this.maxRoomWidth;
-                            int smallRoomChance = 10;
-                            if (GenUtils.chance(random, smallRoomChance, 100)) {
-                                minRoomWidth = 7;
-                                maxRoomWidth = 10;
-                            }
+                path.put(new SimpleLocation(loc), direction);
+                lastPlaced = new SimpleLocation(loc);
 
-                            int roomWidthX = GenUtils.randInt(minRoomWidth, maxRoomWidth);
-                            int roomWidthZ = GenUtils.randInt(minRoomWidth, maxRoomWidth);
+                branchCountdown--;
+                if (branchCountdown <= 0) {
+                    maybeAddNaturalBranch(random, loc, direction);
+                    branchCountdown = GenUtils.randInt(random, MIN_BRANCH_DISTANCE, MAX_BRANCH_DISTANCE);
+                }
+                
+                tryRegisterRoom(random, loc, direction);
 
-                            DirectionalCubeRoom room = new DirectionalCubeRoom(rF,
-                                    roomWidthX,
-                                    roomWidthZ,
-                                    20,
-                                    loc.getX() + (adjDir.getModX() * (2 + roomWidthX / 2)),
-                                    loc.getY(),
-                                    loc.getZ() + (adjDir.getModZ() * (2 + roomWidthZ / 2))
-                            );
-                            // TerraformGeneratorPlugin.logger.info("ROOM: [" + (loc.getX() + adjDir.getModX()*11) + "] : [" + room.getX() + "], [" + (loc.getZ() + adjDir.getModZ()*11) + "] : [" + room.getZ() + "]");
+                meanderCountdown--;
+                if (meanderCountdown <= 0
+                    && GenUtils.chance(random, MEANDER_CHANCE_PERCENT, 100))
+                {
+                    BlockFace[] sideFaces = BlockUtils.getAdjacentFaces(direction);
+                    BlockFace side = sideFaces[random.nextInt(sideFaces.length)];
+                    SimpleLocation shifted = new SimpleLocation(loc).getRelative(side);
 
-                            if (!this.registerRoom(room)) { // Roll crossroads
-                                if (GenUtils.chance(random, lastCrossroad, 20)) {
-                                    crossRoads.put(loc, new CrossRoad(loc, BlockUtils.getAdjacentFaces(direction)));
-                                    lastCrossroad = 0;
-                                }
-                            }
-                        }
+                    if (isLocationValid(shifted)) {
+                        path.put(new SimpleLocation(shifted), side);
+                        lastPlaced = new SimpleLocation(shifted);
+                        tryRegisterRoom(random, shifted, direction);
+                        loc = new SimpleLocation(shifted).getRelative(direction);
                     }
                     else {
-                        if (GenUtils.chance(random, lastCrossroad, 20)) {
-                            crossRoads.put(loc, new CrossRoad(loc, BlockUtils.getAdjacentFaces(direction)));
-                            lastCrossroad = 0;
-                        }
+                        loc = new SimpleLocation(loc).getRelative(direction);
                     }
-                    loc = loc.getRelative(direction);
-                }
-                else if (loc.distanceSqr(core.getX(), core.getY(), core.getZ()) > Math.pow(range, 2)) {
-                    loc = loc.getRelative(direction.getOppositeFace());
-                    direction = BlockUtils.getTurnBlockFace(random, direction);
-                    loc = loc.getRelative(direction);
-                    edgeTurns++;
-                    if (edgeTurns > 3) {
-                        cull = true;
-                        // TerraformGeneratorPlugin.logger.info("Death by edgeTurns .+ 3");
-                    }
+
+                    meanderCountdown = GenUtils.randInt(random, 4, 9);
                 }
                 else {
-                    // TerraformGeneratorPlugin.logger.info("Death by ");
-                    cull = true;
+                    loc = new SimpleLocation(loc).getRelative(direction);
                 }
             }
-            edgeTurns = 0;
-            direction = BlockUtils.getTurnBlockFace(random, direction);
-            loc = loc.getRelative(direction);
+
+            if (blocked) {
+                break;
+            }
+
+            segmentCount++;
+
+            if (!GenUtils.chance(random, CONTINUE_STRAIGHT_CHANCE_PERCENT, 100)) {
+                direction = BlockUtils.getTurnBlockFace(random, direction);
+            }
+
+            loc = new SimpleLocation(lastPlaced).getRelative(direction);
         }
+    }
+
+    private void maybeAddNaturalBranch(@NotNull Random random,
+                                       @NotNull SimpleLocation loc,
+                                       @NotNull BlockFace direction)
+    {
+        if (crossRoads.size() >= MAX_CROSSROADS
+            || !GenUtils.chance(random, BRANCH_CHANCE_PERCENT, 100))
+        {
+            return;
+        }
+
+        BlockFace[] sides = BlockUtils.getAdjacentFaces(direction);
+        BlockFace chosen = chooseOutwardBranch(random, loc, sides);
+        SimpleLocation junction = new SimpleLocation(loc);
+
+        if (GenUtils.chance(random, T_JUNCTION_CHANCE_PERCENT, 100)) {
+            crossRoads.putIfAbsent(junction, new CrossRoad(junction, sides));
+        }
+        else {
+            crossRoads.putIfAbsent(junction, new CrossRoad(junction, new BlockFace[]{chosen}));
+        }
+    }
+
+    private @NotNull BlockFace chooseOutwardBranch(@NotNull Random random,
+                                                    @NotNull SimpleLocation loc,
+                                                    @NotNull BlockFace[] sides)
+    {
+        if (random.nextInt(100) < 70) {
+            SimpleLocation first = new SimpleLocation(loc).getRelative(sides[0]);
+            SimpleLocation second = new SimpleLocation(loc).getRelative(sides[1]);
+
+            double firstDistance = first.distanceSqr(core.getX(), core.getY(), core.getZ());
+            double secondDistance = second.distanceSqr(core.getX(), core.getY(), core.getZ());
+
+            if (firstDistance != secondDistance) {
+                return firstDistance > secondDistance ? sides[0] : sides[1];
+            }
+        }
+
+        return sides[random.nextInt(sides.length)];
+    }
+
+    private void tryRegisterRoom(@NotNull Random random,
+                                 @NotNull SimpleLocation loc,
+                                 @NotNull BlockFace direction)
+    {
+        if (rooms.size() >= MAX_ROOMS
+            || random.nextInt(3) != 0
+            || !GenUtils.chance(random, (int) (villageDensity * 10000), 10000))
+        {
+            return;
+        }
+
+        BlockFace[] adjacentFaces = BlockUtils.getAdjacentFaces(direction);
+        BlockFace adjacentDirection = adjacentFaces[random.nextInt(adjacentFaces.length)];
+        SimpleLocation adjacent = new SimpleLocation(loc).getRelative(adjacentDirection);
+
+        if (!isLocationValid(adjacent)) {
+            return;
+        }
+
+        int roomMinWidth = this.minRoomWidth;
+        int roomMaxWidth = this.maxRoomWidth;
+
+        if (GenUtils.chance(random, 18, 100)) {
+            roomMinWidth = 7;
+            roomMaxWidth = 10;
+        }
+
+        int roomWidthX = GenUtils.randInt(random, roomMinWidth, roomMaxWidth);
+        int roomWidthZ = GenUtils.randInt(random, roomMinWidth, roomMaxWidth);
+
+        DirectionalCubeRoom room = new DirectionalCubeRoom(
+                adjacentDirection.getOppositeFace(),
+                roomWidthX,
+                roomWidthZ,
+                20,
+                loc.getX() + adjacentDirection.getModX() * (2 + roomWidthX / 2),
+                loc.getY(),
+                loc.getZ() + adjacentDirection.getModZ() * (2 + roomWidthZ / 2)
+        );
+
+        registerRoom(room);
     }
 
     public void registerRoomPopulator(RoomPopulatorAbstract roomPop) {
