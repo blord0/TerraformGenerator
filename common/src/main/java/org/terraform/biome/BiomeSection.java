@@ -31,12 +31,12 @@ public class BiomeSection {
 
     // Macro warp bends the climate/ocean/mountain sampling fields without moving
     // the physical BiomeSection used by SectionBlurCache.
-    private static final float MACRO_WARP_FREQUENCY = 0.001f;
-    private static final double MACRO_WARP_STRENGTH = 220.0;
+    private static final float MACRO_WARP_FREQUENCY = 0.0007f;
+    private static final double MACRO_WARP_STRENGTH = 320.0;
 
     // Detail warp breaks up smaller local patterns.
-    private static final float DETAIL_WARP_FREQUENCY = 0.004f;
-    private static final double DETAIL_WARP_STRENGTH = 55.0;
+    private static final float DETAIL_WARP_FREQUENCY = 0.0025f;
+    private static final double DETAIL_WARP_STRENGTH = 30.0;
 
     // Shift section dominance centres only a limited amount. Keeping this below
     // half a section ensures only nearby physical sections can dominate.

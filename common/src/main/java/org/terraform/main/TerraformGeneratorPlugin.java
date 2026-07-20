@@ -83,7 +83,9 @@ public class TerraformGeneratorPlugin extends JavaPlugin implements Listener {
         super.onEnable();
         instance = this;
         taskScheduler = isPaperOrFolia() ? new FoliaScheduler() : new SpigotScheduler();
-        getLogger().warning("### CUSTOM MASSIVE-VILLAGE BUILD LOADED ###");
+        for (int i = 0; i < 3; i++) {
+        	getLogger().warning("### CUSTOM MASSIVE-VILLAGE BUILD LOADED | commit 2 ###");
+        }
         
         try {
             TConfig.init(new File(getDataFolder(), "config.yml"));
