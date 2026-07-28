@@ -10,6 +10,7 @@
 # What I (blord) changed
 Hello, I wanted to change some stuff that wasn't able to be edited in the config.yml
 Biomes now blend better, especially with `dithering: 0.08`, `biomesection-bitshifts: 7`, `temperature-frequency: 0.008` and `moisture-frequency: 0.008`
+![Better biomes](better_biomes.png)
 
 Villages are now bigger (and in my opinion alot better). There is no way to modify the village size/shape/etc without editing the source code and recompiling. If you are wanting to edit the values then go to [PlainsPathRecursiveSpawner.java](common/src/main/java/org/terraform/structure/village/plains/PlainsPathRecursiveSpawner.java) and [PlainsVillagePopulator.java](common/src/main/java/org/terraform/structure/village/plains/PlainsVillagePopulator.java) to modify the values. Some documentation has been done, but trial and error (or claude) will help alot for fine-tuning
 
