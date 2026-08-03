@@ -8,13 +8,16 @@
 
 
 # What I (blord) changed
-Hello, I wanted to change some stuff that wasn't able to be edited in the config.yml
-Biomes now blend better, especially with `dithering: 0.08`, `biomesection-bitshifts: 7`, `temperature-frequency: 0.008` and `moisture-frequency: 0.008`
+Hello, I wanted to change some stuff that wasn't able to be edited in the config.yml. Here is a list of everything I changed.
+
+Biomes now blend better and are alot less blocky-looking on maps. The picture below has `dithering: 0.08`, `biomesection-bitshifts: 7`, `temperature-frequency: 0.008` and `moisture-frequency: 0.008` as the main changes
 ![Better biomes](better_biomes.png)
 
-Villages are now bigger (and in my opinion alot better). There is no way to modify the village size/shape/etc without editing the source code and recompiling. If you are wanting to edit the values then go to [PlainsPathRecursiveSpawner.java](common/src/main/java/org/terraform/structure/village/plains/PlainsPathRecursiveSpawner.java) and [PlainsVillagePopulator.java](common/src/main/java/org/terraform/structure/village/plains/PlainsVillagePopulator.java) to modify the values. Some documentation has been done, but trial and error (or claude) will help alot for fine-tuning
+Villages are now bigger (and in my opinion alot better). Village size (`structures.village.size`, default `300`) and density (`structures.village.density`, default `0.82`) are configurable in `config.yml`. Village layout and shape are hardcoded, so go to [PlainsPathRecursiveSpawner.java](common/src/main/java/org/terraform/structure/village/plains/PlainsPathRecursiveSpawner.java) and [PlainsVillagePopulator.java](common/src/main/java/org/terraform/structure/village/plains/PlainsVillagePopulator.java) to modify the values. Some documentation has been done, but trial and error (or claude) will help alot for fine-tuning
 
-Caves now link up into one big interconnected network instead of feeling like separate disconnected pockets. This is done with a new thin, winding tunnel type (`SpaghettiCave`) that threads between the existing cavern-style caves, similar to how vanilla's cave generation works. This is tunable in `config.yml` under `caves.spaghetti.frequency` (lower = longer, more spaced-out tunnels) and `caves.spaghetti.thickness` (higher = wider tunnels), and `caves.structure-suppression-threshold` still controls how far caves stay away from Large Cave structures.
+Caves now link up into one big interconnected network instead of separate disconnected pockets, using a new thin winding tunnel type (`SpaghettiCave`) that threads between the existing caves, similar to vanilla. Tunable in `config.yml` under `caves.spaghetti.frequency` and `caves.spaghetti.thickness`, and `caves.structure-suppression-threshold` still keeps caves away from Large Cave structures.
+
+Neither sulfur, dripstone, lush or crystalline caves show up with `/terra locatebiome` since they're painted onto cave interiors rather than being real biomes, so I added `/terra locatecavebiome <sulfur|dripstone|lush|crystalline|deep_dark>` (alias `lcb`) to point you towards a nearby candidate spot instead. It's a rough estimate of its location so you might need to look around a bit
 
 <!-- TABLE OF CONTENTS -->
 # Table of Contents

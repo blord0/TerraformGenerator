@@ -8,6 +8,7 @@ import org.terraform.biome.BiomeBank;
 import org.terraform.coregen.populatordata.PopulatorDataAbstract;
 import org.terraform.data.*;
 import org.terraform.main.TerraformGeneratorPlugin;
+import org.terraform.main.config.TConfig;
 import org.terraform.structure.village.VillagePopulator;
 import org.terraform.utils.BlockUtils;
 import org.terraform.utils.GenUtils;
@@ -30,7 +31,7 @@ public class PlainsVillagePopulator extends VillagePopulator {
     public @NotNull Material woodLeaves = Material.OAK_LEAVES;
     public @NotNull Material woodPressurePlate = Material.OAK_PRESSURE_PLATE;
     public @NotNull String wood = "oak_";
-    public int VILLAGE_SIZE = 300;
+    public int VILLAGE_SIZE = TConfig.c.STRUCTURES_VILLAGE_SIZE;
 
     @Override
     public void populate(@NotNull TerraformWorld tw, @NotNull PopulatorDataAbstract data) {
@@ -138,7 +139,7 @@ public class PlainsVillagePopulator extends VillagePopulator {
                 townHall.getZ() + pathStart.getModZ() * 13
         ), VILLAGE_SIZE, pathStart, startSides[0], startSides[1]);
         spawner.forceRegisterRoom(townHall);
-        spawner.setVillageDensity(0.82);
+        spawner.setVillageDensity(TConfig.c.STRUCTURES_VILLAGE_DENSITY);
         spawner.setPathPop(new PlainsVillagePathPopulator(tw, spawner.getRooms().values(), random));
         spawner.registerRoomPopulator(new PlainsVillageStandardHousePopulator(this, random, false, false));
         spawner.registerRoomPopulator(new PlainsVillageTemplePopulator(this, random, false, true));

@@ -464,6 +464,10 @@ public class TConfig extends YamlFileInterface {
     public int STRUCTURES_PLAINSVILLAGE_HEIGHT_TOLERANCE = 10;
     @YamlKey("structures.village.chunk-exclusion-zone")
     public int STRUCTURES_VILLAGE_CHUNK_EXCLUSION_ZONE = 4;
+    @YamlKey("structures.village.size")
+    public int STRUCTURES_VILLAGE_SIZE = 300;
+    @YamlKey("structures.village.density")
+    public double STRUCTURES_VILLAGE_DENSITY = 0.82d;
     @YamlKey("structures.swamphut.enabled")
     public boolean STRUCTURES_SWAMPHUT_ENABLED = true;
     @YamlKey("structures.swamphut.spawnratio")
