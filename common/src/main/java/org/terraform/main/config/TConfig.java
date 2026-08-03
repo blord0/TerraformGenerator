@@ -969,6 +969,9 @@ public class TConfig extends YamlFileInterface {
     @YamlComment("Turns off clusters like dripstone and lush clusters. You can individually turn them off with maxsize set to 0.")
     @YamlKey("feature_toggle.caveclusters")
     public boolean FEATURE_CAVECLUSTERS_ENABLED = true;
+    @YamlComment("Turns off the custom stalactites/stalagmites built out of regular blocks (cobbled deepslate wall, cobblestone wall, sandstone wall, ice, etc.) in regular/deep/frozen/mossy/large/lush/mushroom caves and ruined portals. Does NOT affect real pointed dripstone or sulfur spikes.")
+    @YamlKey("feature_toggle.stalactites")
+    public boolean FEATURE_STALACTITES_ENABLED = false;
     @YamlComment("No animals anymore (AS OF v22.0.0, DOES NOT DISABLE SPAWNERS. USE THE OTHER OPTION FOR THAT). Ensure to `.setGameRule(GameRule.DO_MOB_SPAWNING, false)` to make sure none actually spawn afterwards.")
     @YamlKey("feature_toggle.animals")
     public boolean FEATURE_ANIMALS_ENABLED = true;
@@ -1032,5 +1035,10 @@ public class TConfig extends YamlFileInterface {
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean areDecorationsEnabled() {
         return c.FEATURE_DECORATIONS_ENABLED;
+    }
+
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    public static boolean areStalactitesEnabled() {
+        return c.FEATURE_STALACTITES_ENABLED;
     }
 }

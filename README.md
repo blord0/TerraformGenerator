@@ -19,6 +19,8 @@ Caves now link up into one big interconnected network instead of separate discon
 
 Neither sulfur, dripstone, lush or crystalline caves show up with `/terra locatebiome` since they're painted onto cave interiors rather than being real biomes, so I added `/terra locatecavebiome <sulfur|dripstone|lush|crystalline|deep_dark>` (alias `lcb`) to point you towards a nearby candidate spot instead. It's a rough estimate of its location so you might need to look around a bit
 
+Custom stalactites/stalagmites built out of regular blocks (cobbled deepslate wall, cobblestone wall, sandstone wall, ice, etc) can now be turned or/off with `feature_toggle.stalactites`, without touching `cavedecorators`/`decorations` or losing walls/loot/furniture with them. Real pointed dripstone and sulfur spikes are unaffected by this
+
 <!-- TABLE OF CONTENTS -->
 # Table of Contents
 
