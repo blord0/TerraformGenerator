@@ -14,6 +14,8 @@ Biomes now blend better, especially with `dithering: 0.08`, `biomesection-bitshi
 
 Villages are now bigger (and in my opinion alot better). There is no way to modify the village size/shape/etc without editing the source code and recompiling. If you are wanting to edit the values then go to [PlainsPathRecursiveSpawner.java](common/src/main/java/org/terraform/structure/village/plains/PlainsPathRecursiveSpawner.java) and [PlainsVillagePopulator.java](common/src/main/java/org/terraform/structure/village/plains/PlainsVillagePopulator.java) to modify the values. Some documentation has been done, but trial and error (or claude) will help alot for fine-tuning
 
+Caves now link up into one big interconnected network instead of feeling like separate disconnected pockets. This is done with a new thin, winding tunnel type (`SpaghettiCave`) that threads between the existing cavern-style caves, similar to how vanilla's cave generation works. This is tunable in `config.yml` under `caves.spaghetti.frequency` (lower = longer, more spaced-out tunnels) and `caves.spaghetti.thickness` (higher = wider tunnels), and `caves.structure-suppression-threshold` still controls how far caves stay away from Large Cave structures.
+
 <!-- TABLE OF CONTENTS -->
 # Table of Contents
 

@@ -112,6 +112,7 @@ public class NoiseCacheHandler {
 
         CAVE_FLUID_NOISE,
         CAVE_CHEESE_NOISE,
+        CAVE_SPAGHETTI_NOISE,
         CAVE_XRAVINE_NOISE,
         CAVE_XRAVINE_DETAILS,
         CAVE_YBARRIER_NOISE,

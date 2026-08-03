@@ -1,0 +1,7 @@
+{
+    "java.compile.nullAnalysis.mode": "automatic",
+    "editor.renderValidationDecorations": "off",
+    "java.errors.incompleteClasspath.severity": "ignore",
+    "java.settings.url": ".vscode/java-settings.prefs",
+    "problems.decorations.enabled": false,
+}

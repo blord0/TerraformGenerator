@@ -384,12 +384,19 @@ public class TConfig extends YamlFileInterface {
 
     // -=[CAVES]=-
     @YamlKey("caves.allow-flooded-caves")
-    public boolean CAVES_ALLOW_FLOODED_CAVES = false;
+    public boolean CAVES_ALLOW_FLOODED_CAVES = true;
 
     @YamlComment("Bounded from 0.0 to 1.0. At 1.0, caves are completely blocked at a 200 block radius around each structure. Otherwise, caves gradually shrink towards large structures (even if they're on land). Does not apply to Strongholds.")
     @YamlKey("caves.structure-suppression-threshold")
     public float CAVES_STRUCTURE_SUPPRESSION_THRESHOLD = 0.5f;
     // CAVES_ALLOW_FLOODED_RAVINES("caves.allow-flooded-ravines",true),
+
+    @YamlComment("Frequency of the thin winding tunnels that link cave pockets together. Lower values = longer, more spaced-out tunnels.")
+    @YamlKey("caves.spaghetti.frequency")
+    public float CAVES_SPAGHETTI_FREQUENCY = 0.01f;
+    @YamlComment("Thickness of the tunnels. Roughly bounded 0.0 to 0.15 - higher values carve wider tunnels.")
+    @YamlKey("caves.spaghetti.thickness")
+    public float CAVES_SPAGHETTI_THICKNESS = 0.045f;
 
     // -=[STRUCTURES]=-
     @YamlComment("This controls the distance between each large structure. By default, each biome section is 128 blocks wide")
