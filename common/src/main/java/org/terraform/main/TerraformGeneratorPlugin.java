@@ -84,7 +84,7 @@ public class TerraformGeneratorPlugin extends JavaPlugin implements Listener {
         instance = this;
         taskScheduler = isPaperOrFolia() ? new FoliaScheduler() : new SpigotScheduler();
         for (int i = 0; i < 3; i++) {
-        	getLogger().warning("### CUSTOM WORLDGEN LOADED | commit 5 ###");
+        	getLogger().warning("### CUSTOM WORLDGEN LOADED | commit 7 ###");
         }
         
         try {
