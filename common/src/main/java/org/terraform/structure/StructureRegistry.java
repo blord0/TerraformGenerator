@@ -119,8 +119,8 @@ public class StructureRegistry {
 
 
     public static void init() {
-        registerStructure(StructureType.VILLAGE, new VillageHousePopulator());
         registerStructure(StructureType.VILLAGE, new VillagePopulator());
+        registerStructure(StructureType.VILLAGE, new VillageHousePopulator());
         registerStructure(StructureType.VILLAGE, new OutpostPopulator());
 
         registerStructure(StructureType.MEGA_DUNGEON, new PyramidPopulator());

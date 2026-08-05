@@ -107,18 +107,33 @@ public class PlainsVillageFountainPopulator extends RoomPopulatorAbstract {
     private class PlainsVillageFountainSchematicParser extends SchematicParser {
         @Override
         public void applyData(@NotNull SimpleBlock block, @NotNull BlockData data) {
-            if (data.getMaterial().toString().contains("COBBLESTONE")) {
-                data = Bukkit.createBlockData(data.getAsString().replaceAll("cobblestone",
-                        GenUtils.randChoice(rand,
-                                plainsVillagePopulator.cobblestone,
-                                plainsVillagePopulator.cobblestone,
-                                plainsVillagePopulator.cobblestone,
-                                plainsVillagePopulator.mossyCobblestone
-                        ).toString().toLowerCase(Locale.ENGLISH)
+            String name = data.getMaterial().toString();
+            if (name.contains("COBBLESTONE")) {
+                boolean mossy = GenUtils.chance(rand, 1, 4);
+                Material replacement;
+                // Pick the shape-matching palette field. Biome stone families (e.g. sandstone)
+                // don't have a full 1:1 shape lineup with cobblestone (no smooth_sandstone_wall,
+                // no "mossy" sandstone at all), so the replacement material must be resolved per
+                // shape rather than via a blind "cobblestone" substring swap, or the result can
+                // be a nonexistent block (e.g. smooth_sandstone_wall / mossy_sandstone_stairs).
+                if (name.endsWith("_WALL")) {
+                    replacement = mossy ? plainsVillagePopulator.mossyCobblestoneWall : plainsVillagePopulator.cobblestoneWall;
+                }
+                else if (name.endsWith("_STAIRS")) {
+                    replacement = mossy ? plainsVillagePopulator.mossyCobblestoneStairs : plainsVillagePopulator.cobblestoneStairs;
+                }
+                else if (name.endsWith("_SLAB")) {
+                    replacement = mossy ? plainsVillagePopulator.mossyCobblestoneSlab : plainsVillagePopulator.cobblestoneSlab;
+                }
+                else {
+                    replacement = mossy ? plainsVillagePopulator.mossyCobblestone : plainsVillagePopulator.cobblestone;
+                }
+                data = Bukkit.createBlockData(data.getAsString().replaceAll(name.toLowerCase(Locale.ENGLISH),
+                        replacement.toString().toLowerCase(Locale.ENGLISH)
                 ));
                 super.applyData(block, data);
             }
-            else if (data.getMaterial().toString().startsWith("OAK_")) {
+            else if (name.startsWith("OAK_")) {
                 data = Bukkit.createBlockData(data.getAsString().replaceAll("oak_", plainsVillagePopulator.wood));
                 super.applyData(block, data);
             }

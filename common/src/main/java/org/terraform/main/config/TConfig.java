@@ -86,9 +86,9 @@ public class TConfig extends YamlFileInterface {
     @YamlKey("biome.force.force-type")
     public String BIOME_FORCED_BIOME = "PLAINS";
     @YamlKey("biome.temperature-frequency")
-    public float BIOME_TEMPERATURE_FREQUENCY = 0.03f;
+    public float BIOME_TEMPERATURE_FREQUENCY = 0.008f;
     @YamlKey("biome.moisture-frequency")
-    public float BIOME_MOISTURE_FREQUENCY = 0.03f;
+    public float BIOME_MOISTURE_FREQUENCY = 0.008f;
     @YamlKey("biome.mountainous-threshold")
     public float BIOME_MOUNTAINOUS_THRESHOLD = 10.5f;
     @YamlKey("biome.mountainous-normal-peak-max")
@@ -151,7 +151,7 @@ public class TConfig extends YamlFileInterface {
     @YamlKey("biome.deep-oceanic-threshold")
     public float BIOME_DEEP_OCEANIC_THRESHOLD = 27f;
     @YamlKey("biome.dithering")
-    public double BIOME_DITHER = 0.04d;
+    public double BIOME_DITHER = 0.08d;
     @YamlComment("Controls the size of each biome. Changing this also changes the distance between each structure. The default 7 means that each biome is 2^7=128 blocks wide.")
     @YamlKey("biome.biomesection-bitshifts")
     public int BIOME_SECTION_BITSHIFTS = 7;
@@ -447,7 +447,7 @@ public class TConfig extends YamlFileInterface {
     @YamlKey("structures.animalfarm.enabled")
     public boolean STRUCTURES_ANIMALFARM_ENABLED = true;
     @YamlKey("structures.trailruins.spawnratio")
-    public double STRUCTURES_TRAILRUINS_SPAWNRATIO = 0.5d;
+    public double STRUCTURES_TRAILRUINS_SPAWNRATIO = 0.925d;
     @YamlKey("structures.trailruins.enabled")
     public boolean STRUCTURES_TRAILRUINS_ENABLED = true;
     @YamlKey("structures.trialchamber.spawnratio")
@@ -459,7 +459,7 @@ public class TConfig extends YamlFileInterface {
     @YamlKey("structures.warmoceanruins.enabled")
     public boolean STRUCTURES_WARMOCEANRUINS_ENABLED = true;
     @YamlKey("structures.village.spawnratio")
-    public double STRUCTURES_VILLAGE_SPAWNRATIO = 1d;
+    public double STRUCTURES_VILLAGE_SPAWNRATIO = 0.9d;
     @YamlKey("structures.plainsvillage.enabled")
     public boolean STRUCTURES_PLAINSVILLAGE_ENABLED = true;
     @YamlKey("structures.plainsvillage.height-tolerance")
