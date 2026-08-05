@@ -19,6 +19,7 @@ import org.terraform.utils.GenUtils;
 import org.terraform.utils.blockdata.SlabBuilder;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 public class PlainsPathRecursiveSpawner {
 
@@ -46,6 +47,12 @@ public class PlainsPathRecursiveSpawner {
      */
     private double villageDensity = 1;
     private PathPopulatorAbstract pathPop;
+    /**
+     * Invoked with each room right before that room is populated, so callers can
+     * react to a room's specific location (e.g. re-theme materials to its biome)
+     * even though a village may span multiple biomes.
+     */
+    private @Nullable Consumer<CubeRoom> preRoomPopulateHook;
 
     public PlainsPathRecursiveSpawner(@NotNull SimpleBlock core, int range, BlockFace... faces) {
         SimpleLocation start = new SimpleLocation(core.getX(), 0, core.getZ());
@@ -388,6 +395,9 @@ public class PlainsPathRecursiveSpawner {
                                                      + room.getWidthX()
                                                      + "x"
                                                      + room.getWidthZ());
+                if (preRoomPopulateHook != null) {
+                    preRoomPopulateHook.accept(room);
+                }
                 room.populate(core.getPopData());
             }
         }
@@ -437,6 +447,10 @@ public class PlainsPathRecursiveSpawner {
 
     public void setPathPop(PathPopulatorAbstract pathPop) {
         this.pathPop = pathPop;
+    }
+
+    public void setPreRoomPopulateHook(@Nullable Consumer<CubeRoom> preRoomPopulateHook) {
+        this.preRoomPopulateHook = preRoomPopulateHook;
     }
 
     public @NotNull HashMap<SimpleLocation, DirectionalCubeRoom> getRooms() {

@@ -136,7 +136,39 @@ public class PlainsVillagePopulator extends VillagePopulator {
         ensureFarmHouseEntrance(random, townHall, data);
         pathStart = townHall.getDirection();
 
-        BiomeBank biome = tw.getBiomeBank(townHall.getX(), townHall.getZ());
+        setPaletteForBiome(tw.getBiomeBank(townHall.getX(), townHall.getZ()));
+
+        // Re-get x and z because they change after ensureFarmHouseEntrance.
+        // 13 because that's the width of the townhall.
+        BlockFace[] startSides = BlockUtils.getAdjacentFaces(pathStart);
+        PlainsPathRecursiveSpawner spawner = new PlainsPathRecursiveSpawner(new SimpleBlock(
+                data,
+                townHall.getX() + pathStart.getModX() * 13,
+                y,
+                townHall.getZ() + pathStart.getModZ() * 13
+        ), VILLAGE_SIZE, pathStart, startSides[0], startSides[1]);
+        spawner.forceRegisterRoom(townHall);
+        spawner.setVillageDensity(TConfig.c.STRUCTURES_VILLAGE_DENSITY);
+        spawner.setPathPop(new PlainsVillagePathPopulator(tw, spawner.getRooms().values(), random));
+        spawner.registerRoomPopulator(new PlainsVillageStandardHousePopulator(this, random, false, false));
+        spawner.registerRoomPopulator(new PlainsVillageTemplePopulator(this, random, false, true));
+        spawner.registerRoomPopulator(new PlainsVillageForgePopulator(this, random, false, true));
+        spawner.registerRoomPopulator(new PlainsVillageCropFarmPopulator(this, random, false, false));
+        spawner.registerRoomPopulator(new PlainsVillageAnimalPenPopulator(this, random, false, false));
+        spawner.registerRoomPopulator(new PlainsVillageWellPopulator(this, random, false, false));
+        spawner.registerRoomPopulator(new PlainsVillageFountainPopulator(this, random, false, true));
+        spawner.registerRoomPopulator(new PlainsVillagePondPopulator(random, false, false));
+
+        // Re-theme the palette to match each room's own biome right before it is built,
+        // so a village spanning multiple biomes gets buildings that match the ground
+        // they're actually standing on instead of being locked to the town hall's biome.
+        spawner.setPreRoomPopulateHook(room -> setPaletteForBiome(tw.getBiomeBank(room.getX(), room.getZ())));
+
+        spawner.generate(random);
+        spawner.build(random);
+    }
+
+    public void setPaletteForBiome(@NotNull BiomeBank biome) {
         woodSlab = WoodUtils.getWoodForBiome(biome, WoodType.SLAB);
         woodPlank = WoodUtils.getWoodForBiome(biome, WoodType.PLANKS);
         woodLog = WoodUtils.getWoodForBiome(biome, WoodType.LOG);
@@ -169,30 +201,6 @@ public class PlainsVillagePopulator extends VillagePopulator {
         cobblestoneWall = StoneUtils.getStoneForBiome(biome, StoneType.COBBLE_WALL);
         mossyCobblestoneWall = StoneUtils.getStoneForBiome(biome, StoneType.MOSSY_COBBLE_WALL);
         terracottaAccent = StoneUtils.getStoneForBiome(biome, StoneType.ACCENT);
-
-        // Re-get x and z because they change after ensureFarmHouseEntrance.
-        // 13 because that's the width of the townhall.
-        BlockFace[] startSides = BlockUtils.getAdjacentFaces(pathStart);
-        PlainsPathRecursiveSpawner spawner = new PlainsPathRecursiveSpawner(new SimpleBlock(
-                data,
-                townHall.getX() + pathStart.getModX() * 13,
-                y,
-                townHall.getZ() + pathStart.getModZ() * 13
-        ), VILLAGE_SIZE, pathStart, startSides[0], startSides[1]);
-        spawner.forceRegisterRoom(townHall);
-        spawner.setVillageDensity(TConfig.c.STRUCTURES_VILLAGE_DENSITY);
-        spawner.setPathPop(new PlainsVillagePathPopulator(tw, spawner.getRooms().values(), random));
-        spawner.registerRoomPopulator(new PlainsVillageStandardHousePopulator(this, random, false, false));
-        spawner.registerRoomPopulator(new PlainsVillageTemplePopulator(this, random, false, true));
-        spawner.registerRoomPopulator(new PlainsVillageForgePopulator(this, random, false, true));
-        spawner.registerRoomPopulator(new PlainsVillageCropFarmPopulator(this, random, false, false));
-        spawner.registerRoomPopulator(new PlainsVillageAnimalPenPopulator(this, random, false, false));
-        spawner.registerRoomPopulator(new PlainsVillageWellPopulator(this, random, false, false));
-        spawner.registerRoomPopulator(new PlainsVillageFountainPopulator(this, random, false, true));
-        spawner.registerRoomPopulator(new PlainsVillagePondPopulator(random, false, false));
-
-        spawner.generate(random);
-        spawner.build(random);
     }
 
 }
