@@ -12,6 +12,8 @@ import org.terraform.main.config.TConfig;
 import org.terraform.structure.village.VillagePopulator;
 import org.terraform.utils.BlockUtils;
 import org.terraform.utils.GenUtils;
+import org.terraform.utils.StoneUtils;
+import org.terraform.utils.StoneUtils.StoneType;
 import org.terraform.utils.WoodUtils;
 import org.terraform.utils.WoodUtils.WoodType;
 
@@ -31,6 +33,25 @@ public class PlainsVillagePopulator extends VillagePopulator {
     public @NotNull Material woodLeaves = Material.OAK_LEAVES;
     public @NotNull Material woodPressurePlate = Material.OAK_PRESSURE_PLATE;
     public @NotNull String wood = "oak_";
+    public @NotNull Material stoneBrick = Material.STONE_BRICKS;
+    public @NotNull Material mossyStoneBrick = Material.MOSSY_STONE_BRICKS;
+    public @NotNull Material crackedStoneBrick = Material.CRACKED_STONE_BRICKS;
+    public @NotNull Material chiseledStoneBrick = Material.CHISELED_STONE_BRICKS;
+    public @NotNull Material stoneBrickStairs = Material.STONE_BRICK_STAIRS;
+    public @NotNull Material mossyStoneBrickStairs = Material.MOSSY_STONE_BRICK_STAIRS;
+    public @NotNull Material stoneBrickSlab = Material.STONE_BRICK_SLAB;
+    public @NotNull Material mossyStoneBrickSlab = Material.MOSSY_STONE_BRICK_SLAB;
+    public @NotNull Material stoneBrickWall = Material.STONE_BRICK_WALL;
+    public @NotNull Material mossyStoneBrickWall = Material.MOSSY_STONE_BRICK_WALL;
+    public @NotNull Material cobblestone = Material.COBBLESTONE;
+    public @NotNull Material mossyCobblestone = Material.MOSSY_COBBLESTONE;
+    public @NotNull Material cobblestoneStairs = Material.COBBLESTONE_STAIRS;
+    public @NotNull Material mossyCobblestoneStairs = Material.MOSSY_COBBLESTONE_STAIRS;
+    public @NotNull Material cobblestoneSlab = Material.COBBLESTONE_SLAB;
+    public @NotNull Material mossyCobblestoneSlab = Material.MOSSY_COBBLESTONE_SLAB;
+    public @NotNull Material cobblestoneWall = Material.COBBLESTONE_WALL;
+    public @NotNull Material mossyCobblestoneWall = Material.MOSSY_COBBLESTONE_WALL;
+    public @NotNull Material terracottaAccent = Material.WHITE_TERRACOTTA;
     public int VILLAGE_SIZE = TConfig.c.STRUCTURES_VILLAGE_SIZE;
 
     @Override
@@ -128,6 +149,26 @@ public class PlainsVillagePopulator extends VillagePopulator {
         woodDoor = WoodUtils.getWoodForBiome(biome, WoodType.DOOR);
         woodLeaves = WoodUtils.getWoodForBiome(biome, WoodType.LEAVES);
         wood = woodLeaves.toString().toLowerCase(Locale.ENGLISH).replace("leaves", "");
+
+        stoneBrick = StoneUtils.getStoneForBiome(biome, StoneType.BRICK);
+        mossyStoneBrick = StoneUtils.getStoneForBiome(biome, StoneType.MOSSY_BRICK);
+        crackedStoneBrick = StoneUtils.getStoneForBiome(biome, StoneType.CRACKED_BRICK);
+        chiseledStoneBrick = StoneUtils.getStoneForBiome(biome, StoneType.CHISELED_BRICK);
+        stoneBrickStairs = StoneUtils.getStoneForBiome(biome, StoneType.BRICK_STAIRS);
+        mossyStoneBrickStairs = StoneUtils.getStoneForBiome(biome, StoneType.MOSSY_BRICK_STAIRS);
+        stoneBrickSlab = StoneUtils.getStoneForBiome(biome, StoneType.BRICK_SLAB);
+        mossyStoneBrickSlab = StoneUtils.getStoneForBiome(biome, StoneType.MOSSY_BRICK_SLAB);
+        stoneBrickWall = StoneUtils.getStoneForBiome(biome, StoneType.BRICK_WALL);
+        mossyStoneBrickWall = StoneUtils.getStoneForBiome(biome, StoneType.MOSSY_BRICK_WALL);
+        cobblestone = StoneUtils.getStoneForBiome(biome, StoneType.COBBLE);
+        mossyCobblestone = StoneUtils.getStoneForBiome(biome, StoneType.MOSSY_COBBLE);
+        cobblestoneStairs = StoneUtils.getStoneForBiome(biome, StoneType.COBBLE_STAIRS);
+        mossyCobblestoneStairs = StoneUtils.getStoneForBiome(biome, StoneType.MOSSY_COBBLE_STAIRS);
+        cobblestoneSlab = StoneUtils.getStoneForBiome(biome, StoneType.COBBLE_SLAB);
+        mossyCobblestoneSlab = StoneUtils.getStoneForBiome(biome, StoneType.MOSSY_COBBLE_SLAB);
+        cobblestoneWall = StoneUtils.getStoneForBiome(biome, StoneType.COBBLE_WALL);
+        mossyCobblestoneWall = StoneUtils.getStoneForBiome(biome, StoneType.MOSSY_COBBLE_WALL);
+        terracottaAccent = StoneUtils.getStoneForBiome(biome, StoneType.ACCENT);
 
         // Re-get x and z because they change after ensureFarmHouseEntrance.
         // 13 because that's the width of the townhall.

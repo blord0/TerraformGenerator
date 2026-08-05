@@ -210,12 +210,12 @@ public class PlainsVillageTempleJigsawBuilder extends JigsawBuilder {
                                       @NotNull BlockFace one,
                                       @NotNull BlockFace two)
     {
-        Material[] cobblestone = {Material.COBBLESTONE, Material.MOSSY_COBBLESTONE};
+        Material[] cobblestone = {plainsVillagePopulator.cobblestone, plainsVillagePopulator.mossyCobblestone};
         Material[] stoneBricks = {
-                Material.STONE_BRICKS,
-                Material.STONE_BRICKS,
-                Material.STONE_BRICKS,
-                Material.CRACKED_STONE_BRICKS
+                plainsVillagePopulator.stoneBrick,
+                plainsVillagePopulator.stoneBrick,
+                plainsVillagePopulator.stoneBrick,
+                plainsVillagePopulator.crackedStoneBrick
         };
 
         // Corner and corner spires
@@ -227,11 +227,11 @@ public class PlainsVillageTempleJigsawBuilder extends JigsawBuilder {
 
         // Areas next to the corner. Decorative.
         target.getRelative(one).Pillar(3, random, stoneBricks);
-        new StairBuilder(Material.STONE_BRICK_STAIRS).setFacing(one.getOppositeFace())
+        new StairBuilder(plainsVillagePopulator.stoneBrickStairs).setFacing(one.getOppositeFace())
                                                      .apply(target.getRelative(one).getUp(3));
 
         target.getRelative(two).Pillar(3, random, stoneBricks);
-        new StairBuilder(Material.STONE_BRICK_STAIRS).setFacing(two.getOppositeFace())
+        new StairBuilder(plainsVillagePopulator.stoneBrickStairs).setFacing(two.getOppositeFace())
                                                      .apply(target.getRelative(two).getUp(3));
 
         // Solid platform underneath in case of uneven ground.

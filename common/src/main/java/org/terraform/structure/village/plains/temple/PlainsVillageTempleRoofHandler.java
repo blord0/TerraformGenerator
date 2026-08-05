@@ -21,7 +21,7 @@ import java.util.Collection;
 import java.util.Random;
 
 public class PlainsVillageTempleRoofHandler {
-    // private static final Material[] stoneBricks = {Material.STONE_BRICKS, Material.STONE_BRICKS, Material.STONE_BRICKS, Material.CRACKED_STONE_BRICKS};
+    // private static final Material[] stoneBricks = {plainsVillagePopulator.stoneBrick, plainsVillagePopulator.stoneBrick, plainsVillagePopulator.stoneBrick, plainsVillagePopulator.crackedStoneBrick};
 
     public static void handleTempleRoof(@NotNull PlainsVillagePopulator plainsVillagePopulator,
                                         @NotNull PopulatorDataAbstract data,
@@ -50,7 +50,7 @@ public class PlainsVillageTempleRoofHandler {
             for (int height = 0; height < 3; height++) {
                 for (int horDepth = 0; horDepth < 3 + height * multiplier; horDepth++) {
                     Wall w = base.getRelative(face, horDepth);
-                    new StairBuilder(Material.COBBLESTONE_STAIRS).setFacing(w.getDirection().getOppositeFace())
+                    new StairBuilder(plainsVillagePopulator.cobblestoneStairs).setFacing(w.getDirection().getOppositeFace())
                                                                  .apply(w.getRear(height + 2)
                                                                          .getRelative(0, height * 2, 0))
                                                                  .correct();
@@ -60,11 +60,11 @@ public class PlainsVillageTempleRoofHandler {
                         Wall pillar = w.getRelative(face).getRear(height + 2).getRelative(0, height * 2, 0);
                         pillar.Pillar(3,
                                 new Random(),
-                                Material.COBBLESTONE_WALL,
-                                Material.COBBLESTONE_WALL,
-                                Material.COBBLESTONE_WALL,
-                                Material.MOSSY_COBBLESTONE_WALL);
-                        pillar.setType(Material.CHISELED_STONE_BRICKS);
+                                plainsVillagePopulator.cobblestoneWall,
+                                plainsVillagePopulator.cobblestoneWall,
+                                plainsVillagePopulator.cobblestoneWall,
+                                plainsVillagePopulator.mossyCobblestoneWall);
+                        pillar.setType(plainsVillagePopulator.chiseledStoneBrick);
 
                         // Add lantern decorations to the interior corners
                         // if(height != 0) {
@@ -87,7 +87,7 @@ public class PlainsVillageTempleRoofHandler {
 
                     // Don't place stairs where the roof ends.
                     if (height != 2) {
-                        new StairBuilder(Material.STONE_BRICK_STAIRS).setFacing(w.getDirection())
+                        new StairBuilder(plainsVillagePopulator.stoneBrickStairs).setFacing(w.getDirection())
                                                                      .setHalf(Half.TOP)
                                                                      .lapply(w.getRear(height + 3)
                                                                               .getRelative(0, height * 2, 0))

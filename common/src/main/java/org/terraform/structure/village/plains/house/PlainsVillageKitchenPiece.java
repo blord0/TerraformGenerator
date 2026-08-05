@@ -130,7 +130,7 @@ public class PlainsVillageKitchenPiece extends PlainsVillageStandardPiece {
                     switch (decor) {
                         case 0: // Counter
                             new StairBuilder(
-                                    Material.STONE_BRICK_STAIRS,
+                                    plainsVillagePopulator.stoneBrickStairs,
                                     Material.POLISHED_ANDESITE_STAIRS,
                                     plainsVillagePopulator.woodStairs
                             ).setFacing(w.getDirection().getOppositeFace()).setHalf(Half.TOP).apply(w);

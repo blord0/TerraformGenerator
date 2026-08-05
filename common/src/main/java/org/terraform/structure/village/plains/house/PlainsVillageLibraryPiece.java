@@ -70,8 +70,8 @@ public class PlainsVillageLibraryPiece extends PlainsVillageStandardPiece {
                     new StairBuilder(plainsVillagePopulator.woodStairs).setFacing(w.getDirection().getOppositeFace())
                                                                        .apply(w);
                     new StairBuilder(
-                            Material.STONE_BRICK_STAIRS,
-                            Material.MOSSY_STONE_BRICK_STAIRS
+                            plainsVillagePopulator.stoneBrickStairs,
+                            plainsVillagePopulator.mossyStoneBrickStairs
                     ).setFacing(w.getDirection().getOppositeFace()).setHalf(Half.TOP).apply(w.getUp(2));
                     w.getUp(3).LPillar(25, random, Material.BOOKSHELF);
                 }
@@ -80,7 +80,7 @@ public class PlainsVillageLibraryPiece extends PlainsVillageStandardPiece {
                         new SlabBuilder(plainsVillagePopulator.woodSlab).apply(w);
                     }
 
-                    new SlabBuilder(Material.STONE_BRICK_SLAB, Material.MOSSY_STONE_BRICK_SLAB).setType(Slab.Type.TOP)
+                    new SlabBuilder(plainsVillagePopulator.stoneBrickSlab, plainsVillagePopulator.mossyStoneBrickSlab).setType(Slab.Type.TOP)
                                                                                                .apply(w.getUp(2));
 
                     w.getUp(3).LPillar(25, random, Material.BOOKSHELF);

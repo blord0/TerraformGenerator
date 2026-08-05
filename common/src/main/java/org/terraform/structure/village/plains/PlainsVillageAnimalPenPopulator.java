@@ -61,7 +61,7 @@ public class PlainsVillageAnimalPenPopulator extends PlainsVillageAbstractRoomPo
             for (int i = 0; i < entry.getValue(); i++) {
                 Wall target = w.getAtY(roomY).findNearestAirPocket(15);
                 if (target != null) {
-                    if (target.getDown().getType() != Material.COBBLESTONE_SLAB
+                    if (target.getDown().getType() != plainsVillagePopulator.cobblestoneSlab
                         && target.getDown().getType() != plainsVillagePopulator.woodFence)
                     {
                         int wallHeight = 3;
@@ -71,7 +71,7 @@ public class PlainsVillageAnimalPenPopulator extends PlainsVillageAbstractRoomPo
 
                         if (i % 2 == 0) {
                             target.Pillar(wallHeight, plainsVillagePopulator.woodLog);
-                            target.getUp(wallHeight).setType(Material.COBBLESTONE_SLAB);
+                            target.getUp(wallHeight).setType(plainsVillagePopulator.cobblestoneSlab);
                             target.getDown(2).getRight().CorrectMultipleFacing(wallHeight + 2);
                             target.getDown(2).getLeft().CorrectMultipleFacing(wallHeight + 2);
                         }
@@ -152,7 +152,7 @@ public class PlainsVillageAnimalPenPopulator extends PlainsVillageAbstractRoomPo
                             continue;
                         }
 
-                        new StairBuilder(Material.COBBLESTONE_STAIRS).setHalf(Half.TOP)
+                        new StairBuilder(plainsVillagePopulator.cobblestoneStairs).setHalf(Half.TOP)
                                                                      .setFacing(core.getDirection())
                                                                      .apply(core.getRear())
                                                                      .setFacing(core.getDirection().getOppositeFace())
@@ -164,7 +164,7 @@ public class PlainsVillageAnimalPenPopulator extends PlainsVillageAbstractRoomPo
                                                                      .apply(core.getFront().getRight())
                                                                      .apply(core.getRight());
 
-                        new SlabBuilder(Material.COBBLESTONE_SLAB).setWaterlogged(true)
+                        new SlabBuilder(plainsVillagePopulator.cobblestoneSlab).setWaterlogged(true)
                                                                   .apply(core)
                                                                   .apply(core.getFront());
 

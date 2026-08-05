@@ -64,7 +64,7 @@ public class PlainsVillageTempleClericAltarPiece extends PlainsVillageTempleStan
             dir = BlockUtils.getDirectBlockFace(random);
         }
 
-        core.setType(Material.CHISELED_STONE_BRICKS);
+        core.setType(plainsVillagePopulator.chiseledStoneBrick);
         core.getUp().setType(Material.BREWING_STAND);
 
         for (Entry<Wall, Integer> entry : this.getRoom().getFourWalls(data, 0).entrySet()) {
@@ -77,7 +77,7 @@ public class PlainsVillageTempleClericAltarPiece extends PlainsVillageTempleStan
                 if (!Tag.STAIRS.isTagged(w.getFront().getType())) {
                     w.getFront().getUp().setType(Material.AIR);
                     w.getFront().setType(Material.WATER);
-                    w.getFront().getDown().setType(Material.CHISELED_STONE_BRICKS);
+                    w.getFront().getDown().setType(plainsVillagePopulator.chiseledStoneBrick);
 
                     // Sometimes the pond will have corals.
                     if (random.nextBoolean()) {
@@ -89,15 +89,15 @@ public class PlainsVillageTempleClericAltarPiece extends PlainsVillageTempleStan
             }
         }
 
-        new StairBuilder(Material.COBBLESTONE_STAIRS, Material.STONE_BRICK_STAIRS).setFacing(dir.getOppositeFace())
+        new StairBuilder(plainsVillagePopulator.cobblestoneStairs, plainsVillagePopulator.stoneBrickStairs).setFacing(dir.getOppositeFace())
                                                                                   .apply(core.getRelative(dir));
 
-        core.getDown().setType(Material.STONE_BRICKS);
-        core.getRelative(dir).getDown().setType(Material.STONE_BRICKS);
-        core.getRelative(dir, 2).getDown().setType(Material.STONE_BRICKS);
+        core.getDown().setType(plainsVillagePopulator.stoneBrick);
+        core.getRelative(dir).getDown().setType(plainsVillagePopulator.stoneBrick);
+        core.getRelative(dir, 2).getDown().setType(plainsVillagePopulator.stoneBrick);
 
         for (int[] corner : this.getRoom().getAllCorners()) {
-            data.setType(corner[0], getRoom().getY(), corner[1], Material.CHISELED_STONE_BRICKS);
+            data.setType(corner[0], getRoom().getY(), corner[1], plainsVillagePopulator.chiseledStoneBrick);
             data.setType(corner[0], getRoom().getY() + 1, corner[1], Material.LANTERN);
         }
     }

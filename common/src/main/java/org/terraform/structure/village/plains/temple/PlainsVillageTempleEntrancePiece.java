@@ -35,10 +35,10 @@ public class PlainsVillageTempleEntrancePiece extends JigsawStructurePiece {
     @Override
     public void build(@NotNull PopulatorDataAbstract data, @NotNull Random rand) {
         Material[] stoneBricks = {
-                Material.STONE_BRICKS,
-                Material.STONE_BRICKS,
-                Material.STONE_BRICKS,
-                Material.CRACKED_STONE_BRICKS
+                plainsVillagePopulator.stoneBrick,
+                plainsVillagePopulator.stoneBrick,
+                plainsVillagePopulator.stoneBrick,
+                plainsVillagePopulator.crackedStoneBrick
         };
 
         SimpleEntry<Wall, Integer> entry = this.getRoom().getWall(data, getRotation().getOppositeFace(), 0);
@@ -46,7 +46,7 @@ public class PlainsVillageTempleEntrancePiece extends JigsawStructurePiece {
 
         // Wall
         for (int i = 0; i < entry.getValue(); i++) {
-            w.getDown().downUntilSolid(rand, Material.COBBLESTONE, Material.MOSSY_COBBLESTONE);
+            w.getDown().downUntilSolid(rand, plainsVillagePopulator.cobblestone, plainsVillagePopulator.mossyCobblestone);
             w.Pillar(5, rand, stoneBricks);
 
             w = w.getLeft();
@@ -72,7 +72,7 @@ public class PlainsVillageTempleEntrancePiece extends JigsawStructurePiece {
         // Stairway down
 
         if (core.getFront().isSolid()) {
-            new StairwayBuilder(Material.COBBLESTONE_STAIRS, Material.MOSSY_COBBLESTONE_STAIRS).setAngled(true)
+            new StairwayBuilder(plainsVillagePopulator.cobblestoneStairs, plainsVillagePopulator.mossyCobblestoneStairs).setAngled(true)
                                                                                                .setStopAtWater(true)
                                                                                                .setStairwayDirection(
                                                                                                        BlockFace.UP)
@@ -81,25 +81,25 @@ public class PlainsVillageTempleEntrancePiece extends JigsawStructurePiece {
             core.getFront(2).Pillar(3, rand, Material.AIR);
         }
         else {
-            new StairwayBuilder(Material.COBBLESTONE_STAIRS, Material.MOSSY_COBBLESTONE_STAIRS).setAngled(true)
+            new StairwayBuilder(plainsVillagePopulator.cobblestoneStairs, plainsVillagePopulator.mossyCobblestoneStairs).setAngled(true)
                                                                                                .setStopAtWater(true)
                                                                                                .build(core.getFront()
                                                                                                           .getDown());
         }
 
         // Decorate Doorway with some details
-        new StairBuilder(Material.STONE_BRICK_STAIRS).setHalf(Half.TOP)
+        new StairBuilder(plainsVillagePopulator.stoneBrickStairs).setHalf(Half.TOP)
                                                      .setFacing(core.getDirection().getOppositeFace())
                                                      .apply(core.getFront().getUp(2));
-        core.getFront().getUp(3).setType(Material.CHISELED_STONE_BRICKS);
+        core.getFront().getUp(3).setType(plainsVillagePopulator.chiseledStoneBrick);
 
         Wall doorAdj = core.getFront().getRight();
-        new StairBuilder(Material.STONE_BRICK_STAIRS).setFacing(doorAdj.getDirection().getOppositeFace())
+        new StairBuilder(plainsVillagePopulator.stoneBrickStairs).setFacing(doorAdj.getDirection().getOppositeFace())
                                                      .apply(doorAdj.getUp());
         doorAdj.downUntilSolid(rand, stoneBricks);
 
         doorAdj = core.getFront().getLeft();
-        new StairBuilder(Material.STONE_BRICK_STAIRS).setFacing(doorAdj.getDirection().getOppositeFace())
+        new StairBuilder(plainsVillagePopulator.stoneBrickStairs).setFacing(doorAdj.getDirection().getOppositeFace())
                                                      .apply(doorAdj.getUp());
         doorAdj.downUntilSolid(rand, stoneBricks);
 

@@ -43,7 +43,11 @@ public class VillagePopulator extends SingleMegaChunkStructurePopulator {
             || biome == (BiomeBank.SAVANNA)
             || biome == (BiomeBank.TAIGA)
             || biome == (BiomeBank.SCARLET_FOREST)
-            || biome == (BiomeBank.CHERRY_GROVE))
+            || biome == (BiomeBank.CHERRY_GROVE)
+            || biome == (BiomeBank.SNOWY_TAIGA)
+            || biome == (BiomeBank.SNOWY_WASTELAND)
+            || biome == (BiomeBank.DESERT)
+            || biome == (BiomeBank.BADLANDS))
         {
 
             return rollSpawnRatio(tw, chunkX, chunkZ);
@@ -94,7 +98,11 @@ public class VillagePopulator extends SingleMegaChunkStructurePopulator {
                    || BiomeBank.isBiomeEnabled(BiomeBank.SAVANNA)
                    || BiomeBank.isBiomeEnabled(BiomeBank.TAIGA)
                    || BiomeBank.isBiomeEnabled(BiomeBank.SCARLET_FOREST)
-                   || BiomeBank.isBiomeEnabled(BiomeBank.CHERRY_GROVE))
+                   || BiomeBank.isBiomeEnabled(BiomeBank.CHERRY_GROVE)
+                   || BiomeBank.isBiomeEnabled(BiomeBank.SNOWY_TAIGA)
+                   || BiomeBank.isBiomeEnabled(BiomeBank.SNOWY_WASTELAND)
+                   || BiomeBank.isBiomeEnabled(BiomeBank.DESERT)
+                   || BiomeBank.isBiomeEnabled(BiomeBank.BADLANDS))
                && TConfig.c.STRUCTURES_PLAINSVILLAGE_ENABLED;
     }
 }

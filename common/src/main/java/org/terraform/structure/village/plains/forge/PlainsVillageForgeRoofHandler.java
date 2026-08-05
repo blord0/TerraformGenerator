@@ -32,10 +32,10 @@ public class PlainsVillageForgeRoofHandler {
         SimpleLocation lowerBound = null;
         SimpleLocation upperBound = null;
 
-        Material roofCornerMaterial = GenUtils.randChoice(Material.STONE_BRICKS, Material.COBBLESTONE);
-        Material roofSlabCornerMaterial = Material.STONE_BRICK_SLAB;
-        if (roofCornerMaterial == Material.COBBLESTONE) {
-            roofSlabCornerMaterial = Material.COBBLESTONE_SLAB;
+        Material roofCornerMaterial = GenUtils.randChoice(plainsVillagePopulator.stoneBrick, plainsVillagePopulator.cobblestone);
+        Material roofSlabCornerMaterial = plainsVillagePopulator.stoneBrickSlab;
+        if (roofCornerMaterial == plainsVillagePopulator.cobblestone) {
+            roofSlabCornerMaterial = plainsVillagePopulator.cobblestoneSlab;
         }
 
         for (SimpleLocation sLoc : rectangleLocations) {
@@ -116,7 +116,7 @@ public class PlainsVillageForgeRoofHandler {
                             {
                                 new Wall(target.getDown()).downUntilSolid(new Random(),
                                         Material.STONE,
-                                        Material.COBBLESTONE,
+                                        plainsVillagePopulator.cobblestone,
                                         Material.ANDESITE
                                 );
                             }

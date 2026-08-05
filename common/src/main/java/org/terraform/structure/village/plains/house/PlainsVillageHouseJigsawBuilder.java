@@ -103,10 +103,10 @@ public class PlainsVillageHouseJigsawBuilder extends JigsawBuilder {
             Material[] fenceType = {plainsVillagePopulator.woodFence};
             Material cornerType = plainsVillagePopulator.woodLog;
             if (this.var == PlainsVillageHouseVariant.COBBLESTONE) {
-                fenceType = new Material[] {Material.COBBLESTONE_WALL, Material.MOSSY_COBBLESTONE_WALL};
+                fenceType = new Material[] {plainsVillagePopulator.cobblestoneWall, plainsVillagePopulator.mossyCobblestoneWall};
             }
             else if (this.var == PlainsVillageHouseVariant.CLAY) {
-                fenceType = new Material[] {Material.STONE_BRICK_WALL, Material.MOSSY_STONE_BRICK_WALL};
+                fenceType = new Material[] {plainsVillagePopulator.stoneBrickWall, plainsVillagePopulator.mossyStoneBrickWall};
                 cornerType = plainsVillagePopulator.woodStrippedLog;
             }
             if (piece.getWalledFaces().contains(BlockFace.NORTH) && piece.getWalledFaces()
@@ -158,15 +158,15 @@ public class PlainsVillageHouseJigsawBuilder extends JigsawBuilder {
                                       Material[] fenceType)
     {
         target.Pillar(4, random, cornerType);
-        target.getDown().downUntilSolid(random, Material.COBBLESTONE, Material.MOSSY_COBBLESTONE);
+        target.getDown().downUntilSolid(random, plainsVillagePopulator.cobblestone, plainsVillagePopulator.mossyCobblestone);
         target = target.getUp();
         target.getRelative(one).Pillar(3, random, fenceType);
         target.getRelative(two).Pillar(3, random, fenceType);
         target.getRelative(one).CorrectMultipleFacing(3);
         target.getRelative(two).CorrectMultipleFacing(3);
         target = target.getDown();
-        target.getRelative(one).downUntilSolid(random, Material.COBBLESTONE, Material.MOSSY_COBBLESTONE);
-        target.getRelative(two).downUntilSolid(random, Material.COBBLESTONE, Material.MOSSY_COBBLESTONE);
+        target.getRelative(one).downUntilSolid(random, plainsVillagePopulator.cobblestone, plainsVillagePopulator.mossyCobblestone);
+        target.getRelative(two).downUntilSolid(random, plainsVillagePopulator.cobblestone, plainsVillagePopulator.mossyCobblestone);
     }
 
     public PlainsVillageHouseVariant getVariant() {

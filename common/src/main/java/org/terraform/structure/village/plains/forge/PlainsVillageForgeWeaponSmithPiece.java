@@ -48,7 +48,7 @@ public class PlainsVillageForgeWeaponSmithPiece extends PlainsVillageForgeStanda
             for (int i = 0; i < entry.getValue(); i++) {
 
                 // Ensure that you don't place anything against the entrance
-                if (w.getRear().getDown().getType() != Material.CHISELED_STONE_BRICKS) {
+                if (w.getRear().getDown().getType() != plainsVillagePopulator.chiseledStoneBrick) {
                     int choice = random.nextInt(4);
                     switch (choice) {
                         case 0:

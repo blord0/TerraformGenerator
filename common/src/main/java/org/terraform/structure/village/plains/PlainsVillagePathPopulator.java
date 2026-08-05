@@ -7,6 +7,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.type.Slab;
 import org.bukkit.block.data.type.Slab.Type;
 import org.jetbrains.annotations.NotNull;
+import org.terraform.biome.BiomeBank;
 import org.terraform.coregen.bukkit.TerraformGenerator;
 import org.terraform.data.SimpleBlock;
 import org.terraform.data.TerraformWorld;
@@ -18,6 +19,10 @@ import org.terraform.structure.room.PathPopulatorAbstract;
 import org.terraform.structure.room.PathPopulatorData;
 import org.terraform.utils.BlockUtils;
 import org.terraform.utils.GenUtils;
+import org.terraform.utils.StoneUtils;
+import org.terraform.utils.StoneUtils.StoneType;
+import org.terraform.utils.WoodUtils;
+import org.terraform.utils.WoodUtils.WoodType;
 
 import java.util.Collection;
 import java.util.Random;
@@ -34,26 +39,48 @@ public class PlainsVillagePathPopulator extends PathPopulatorAbstract {
     }
 
     public static void placeLamp(@NotNull Random rand, @NotNull SimpleBlock b) {
-        b.setType(GenUtils.randChoice(rand, Material.STONE_BRICKS, Material.MOSSY_STONE_BRICKS));
-        b.getUp().setType(GenUtils.randChoice(rand, Material.COBBLESTONE_WALL, Material.MOSSY_COBBLESTONE_WALL));
-        b.getUp(2).setType(GenUtils.randChoice(rand, Material.COBBLESTONE_WALL, Material.MOSSY_COBBLESTONE_WALL));
-        b.getUp(3).setType(GenUtils.randChoice(rand, Material.COBBLESTONE, Material.MOSSY_COBBLESTONE));
+        BiomeBank biome = b.getPopData().getTerraformWorld().getBiomeBank(b.getX(), b.getZ());
+        b.setType(GenUtils.randChoice(rand,
+                StoneUtils.getStoneForBiome(biome, StoneType.BRICK),
+                StoneUtils.getStoneForBiome(biome, StoneType.MOSSY_BRICK)
+        ));
+        b.getUp().setType(GenUtils.randChoice(rand,
+                StoneUtils.getStoneForBiome(biome, StoneType.COBBLE_WALL),
+                StoneUtils.getStoneForBiome(biome, StoneType.MOSSY_COBBLE_WALL)
+        ));
+        b.getUp(2).setType(GenUtils.randChoice(rand,
+                StoneUtils.getStoneForBiome(biome, StoneType.COBBLE_WALL),
+                StoneUtils.getStoneForBiome(biome, StoneType.MOSSY_COBBLE_WALL)
+        ));
+        b.getUp(3).setType(GenUtils.randChoice(rand,
+                StoneUtils.getStoneForBiome(biome, StoneType.COBBLE),
+                StoneUtils.getStoneForBiome(biome, StoneType.MOSSY_COBBLE)
+        ));
         b.getUp(4).setType(Material.CAMPFIRE);
-        b.getUp(5).setType(GenUtils.randChoice(rand, Material.STONE_BRICKS, Material.MOSSY_STONE_BRICKS));
+        b.getUp(5).setType(GenUtils.randChoice(rand,
+                StoneUtils.getStoneForBiome(biome, StoneType.BRICK),
+                StoneUtils.getStoneForBiome(biome, StoneType.MOSSY_BRICK)
+        ));
         for (BlockFace face : BlockUtils.directBlockFaces) {
             Slab tSlab = (Slab) Bukkit.createBlockData(GenUtils.randChoice(
                     rand,
-                    Material.STONE_BRICK_SLAB,
-                    Material.MOSSY_STONE_BRICK_SLAB
+                    StoneUtils.getStoneForBiome(biome, StoneType.BRICK_SLAB),
+                    StoneUtils.getStoneForBiome(biome, StoneType.MOSSY_BRICK_SLAB)
             ));
             tSlab.setType(Type.TOP);
             b.getRelative(face).getUp(3).setBlockData(tSlab);
             b.getRelative(face)
              .getUp(4)
-             .setType(GenUtils.randChoice(rand, Material.COBBLESTONE_WALL, Material.MOSSY_COBBLESTONE_WALL));
+             .setType(GenUtils.randChoice(rand,
+                     StoneUtils.getStoneForBiome(biome, StoneType.COBBLE_WALL),
+                     StoneUtils.getStoneForBiome(biome, StoneType.MOSSY_COBBLE_WALL)
+             ));
             b.getRelative(face)
              .getUp(5)
-             .setType(GenUtils.randChoice(rand, Material.STONE_BRICK_SLAB, Material.MOSSY_STONE_BRICK_SLAB));
+             .setType(GenUtils.randChoice(rand,
+                     StoneUtils.getStoneForBiome(biome, StoneType.BRICK_SLAB),
+                     StoneUtils.getStoneForBiome(biome, StoneType.MOSSY_BRICK_SLAB)
+             ));
         }
     }
 
@@ -99,13 +126,15 @@ public class PlainsVillagePathPopulator extends PathPopulatorAbstract {
             if ((BlockUtils.getAxisFromBlockFace(ppd.dir) == Axis.X && ppd.base.getX() % 2 == 0)
                 || (BlockUtils.getAxisFromBlockFace(ppd.dir) == Axis.Z && ppd.base.getZ() % 2 == 0))
             {
-                pathCore.getDown().downLPillar(random, 50, Material.OAK_LOG);
-                pathCore.setType(Material.CHISELED_STONE_BRICKS);
+                BiomeBank biome = tw.getBiomeBank(ppd.base.getX(), ppd.base.getZ());
+                pathCore.getDown().downLPillar(random, 50, WoodUtils.getWoodForBiome(biome, WoodType.LOG));
+                pathCore.setType(StoneUtils.getStoneForBiome(biome, StoneType.CHISELED_BRICK));
             }
             return;
         }
 
         // Decorate the sides of the paths
+        BiomeBank pathBiome = tw.getBiomeBank(ppd.base.getX(), ppd.base.getZ());
         Wall pathCore = new Wall(ppd.base, ppd.dir);
         for (BlockFace face : BlockUtils.getAdjacentFaces(ppd.dir)) {
             for (int i = 0; i < 4; i++) {
@@ -120,7 +149,10 @@ public class PlainsVillagePathPopulator extends PathPopulatorAbstract {
                         BlockUtils.pickTallFlower().build(target);
                     }
                     else if (GenUtils.chance(1, 10)) { // Small cobble walls with lanterns
-                        target.getUp().setType(Material.COBBLESTONE_WALL, Material.MOSSY_COBBLESTONE_WALL);
+                        target.getUp().setType(
+                                StoneUtils.getStoneForBiome(pathBiome, StoneType.COBBLE_WALL),
+                                StoneUtils.getStoneForBiome(pathBiome, StoneType.MOSSY_COBBLE_WALL)
+                        );
                         if (TConfig.areDecorationsEnabled()) {
                             target.getUp(2).setType(Material.LANTERN);
                         }

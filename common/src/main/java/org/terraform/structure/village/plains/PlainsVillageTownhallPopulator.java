@@ -20,6 +20,8 @@ import org.terraform.structure.room.RoomPopulatorAbstract;
 import org.terraform.structure.villagehouse.farmhouse.FarmhouseSchematicParser;
 import org.terraform.utils.BlockUtils;
 import org.terraform.utils.GenUtils;
+import org.terraform.utils.StoneUtils;
+import org.terraform.utils.StoneUtils.StoneType;
 import org.terraform.utils.WoodUtils;
 import org.terraform.utils.WoodUtils.WoodType;
 
@@ -84,10 +86,10 @@ public class PlainsVillageTownhallPopulator extends RoomPopulatorAbstract {
                                 y - 2,
                                 z + nz,
                                 data,
-                                Material.COBBLESTONE,
-                                Material.COBBLESTONE,
-                                Material.COBBLESTONE,
-                                Material.MOSSY_COBBLESTONE
+                                StoneUtils.getStoneForBiome(biome, StoneType.COBBLE),
+                                StoneUtils.getStoneForBiome(biome, StoneType.COBBLE),
+                                StoneUtils.getStoneForBiome(biome, StoneType.COBBLE),
+                                StoneUtils.getStoneForBiome(biome, StoneType.MOSSY_COBBLE)
                         );
                     }
                     else if (data.getType(x + nx, y - 1, z + nz).toString().contains("LOG")) {
@@ -104,10 +106,10 @@ public class PlainsVillageTownhallPopulator extends RoomPopulatorAbstract {
             // while(w.getType() != Material.DIRT){
             while (!w.isSolid() || w.getType().toString().contains("PLANKS")) {
                 Stairs stairs = (Stairs) Bukkit.createBlockData(GenUtils.randChoice(this.rand,
-                        Material.COBBLESTONE_STAIRS,
-                        Material.COBBLESTONE_STAIRS,
-                        Material.COBBLESTONE_STAIRS,
-                        Material.MOSSY_COBBLESTONE_STAIRS
+                        StoneUtils.getStoneForBiome(biome, StoneType.COBBLE_STAIRS),
+                        StoneUtils.getStoneForBiome(biome, StoneType.COBBLE_STAIRS),
+                        StoneUtils.getStoneForBiome(biome, StoneType.COBBLE_STAIRS),
+                        StoneUtils.getStoneForBiome(biome, StoneType.MOSSY_COBBLE_STAIRS)
                 ));
                 stairs.setFacing(w.getDirection().getOppositeFace());
                 w.getRight().setBlockData(stairs);
@@ -116,18 +118,18 @@ public class PlainsVillageTownhallPopulator extends RoomPopulatorAbstract {
 
                 w.getLeft(2).getUp().downUntilSolid(this.rand, WoodUtils.getWoodForBiome(biome, WoodType.LOG));
                 w.getLeft(2).getUp(2).setType(GenUtils.randChoice(this.rand,
-                        Material.COBBLESTONE_WALL,
-                        Material.COBBLESTONE_WALL,
-                        Material.COBBLESTONE_WALL,
-                        Material.MOSSY_COBBLESTONE_WALL
+                        StoneUtils.getStoneForBiome(biome, StoneType.COBBLE_WALL),
+                        StoneUtils.getStoneForBiome(biome, StoneType.COBBLE_WALL),
+                        StoneUtils.getStoneForBiome(biome, StoneType.COBBLE_WALL),
+                        StoneUtils.getStoneForBiome(biome, StoneType.MOSSY_COBBLE_WALL)
                 ));
 
                 w.getRight(2).getUp().downUntilSolid(this.rand, WoodUtils.getWoodForBiome(biome, WoodType.LOG));
                 w.getRight(2).getUp(2).setType(GenUtils.randChoice(this.rand,
-                        Material.COBBLESTONE_WALL,
-                        Material.COBBLESTONE_WALL,
-                        Material.COBBLESTONE_WALL,
-                        Material.MOSSY_COBBLESTONE_WALL
+                        StoneUtils.getStoneForBiome(biome, StoneType.COBBLE_WALL),
+                        StoneUtils.getStoneForBiome(biome, StoneType.COBBLE_WALL),
+                        StoneUtils.getStoneForBiome(biome, StoneType.COBBLE_WALL),
+                        StoneUtils.getStoneForBiome(biome, StoneType.MOSSY_COBBLE_WALL)
                 ));
 
                 w = w.getFront().getDown();

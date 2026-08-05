@@ -36,7 +36,7 @@ public class PlainsVillageForgeMasonPiece extends PlainsVillageForgeStandardPiec
         }
 
         if (this.getWalledFaces().size() == 1) {
-            if (core.getRelative(this.getWalledFaces().get(0), 3).getType() == Material.CHISELED_STONE_BRICKS) {
+            if (core.getRelative(this.getWalledFaces().get(0), 3).getType() == plainsVillagePopulator.chiseledStoneBrick) {
                 spawnCenteredPileOfRocks(random, new Wall(core));
                 return;
             }
@@ -46,7 +46,7 @@ public class PlainsVillageForgeMasonPiece extends PlainsVillageForgeStandardPiec
         for (BlockFace face : walledFaces) {
 
             // Don't spawn stone pile against entrance
-            if (core.getRelative(face, 3).getType() == Material.CHISELED_STONE_BRICKS) {
+            if (core.getRelative(face, 3).getType() == plainsVillagePopulator.chiseledStoneBrick) {
                 continue;
             }
 

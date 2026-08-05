@@ -167,10 +167,10 @@ public class PlainsVillageRoofHandler {
                 }
 
                 Material[] stairType = {plainsVillagePopulator.woodStairs};
-                Material[] slabType = {Material.COBBLESTONE_SLAB, Material.MOSSY_COBBLESTONE_SLAB};
+                Material[] slabType = {plainsVillagePopulator.cobblestoneSlab, plainsVillagePopulator.mossyCobblestoneSlab};
 
                 if (right == 0 || right == breadth - 1 || i == 0 || i == length - 1) {
-                    stairType = new Material[] {Material.COBBLESTONE_STAIRS, Material.MOSSY_COBBLESTONE_STAIRS};
+                    stairType = new Material[] {plainsVillagePopulator.cobblestoneStairs, plainsVillagePopulator.mossyCobblestoneStairs};
                 }
 
                 if (breadth % 2 == 1) { // For odd breadth.
@@ -235,11 +235,11 @@ public class PlainsVillageRoofHandler {
         Material[] stairMat = {plainsVillagePopulator.woodStairs};
 
         if (builder.getVariant() == PlainsVillageHouseVariant.CLAY) {
-            solidMat = new Material[] {Material.COBBLESTONE, Material.COBBLESTONE, Material.MOSSY_COBBLESTONE};
+            solidMat = new Material[] {plainsVillagePopulator.cobblestone, plainsVillagePopulator.cobblestone, plainsVillagePopulator.mossyCobblestone};
             stairMat = new Material[] {
-                    Material.COBBLESTONE_STAIRS,
-                    Material.COBBLESTONE_STAIRS,
-                    Material.MOSSY_COBBLESTONE_STAIRS
+                    plainsVillagePopulator.cobblestoneStairs,
+                    plainsVillagePopulator.cobblestoneStairs,
+                    plainsVillagePopulator.mossyCobblestoneStairs
             };
         }
 
@@ -274,9 +274,9 @@ public class PlainsVillageRoofHandler {
                                 piece.getRoom().getY() + piece.getRoom().getHeight() + 3 + depth,
                                 z
                         );
-                        if (target.getType() != Material.COBBLESTONE
+                        if (target.getType() != plainsVillagePopulator.cobblestone
                             && target.getType() != plainsVillagePopulator.woodPlank
-                            && target.getType() != Material.MOSSY_COBBLESTONE)
+                            && target.getType() != plainsVillagePopulator.mossyCobblestone)
                         {
                             // BlockUtils.correctSurroundingStairData(target);
                             continue;

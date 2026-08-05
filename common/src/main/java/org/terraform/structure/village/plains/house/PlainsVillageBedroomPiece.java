@@ -105,7 +105,7 @@ public class PlainsVillageBedroomPiece extends PlainsVillageStandardPiece {
                             if (random.nextBoolean()) {
                                 // Place Night stand
                                 new StairBuilder(
-                                        Material.STONE_BRICK_STAIRS,
+                                        plainsVillagePopulator.stoneBrickStairs,
                                         Material.POLISHED_ANDESITE_STAIRS
                                 ).setFacing(w.getDirection().getOppositeFace()).setHalf(Half.TOP).apply(w);
                                 BlockUtils.pickPottedPlant().build(w.getUp());

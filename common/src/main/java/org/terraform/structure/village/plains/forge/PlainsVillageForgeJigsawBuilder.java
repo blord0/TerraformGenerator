@@ -170,7 +170,7 @@ public class PlainsVillageForgeJigsawBuilder extends JigsawBuilder {
         else {
             // Fence stubs
             target.Pillar(2, random, plainsVillagePopulator.woodLog);
-            target.getUp(2).setType(Material.STONE_SLAB, Material.COBBLESTONE_SLAB, Material.ANDESITE_SLAB);
+            target.getUp(2).setType(Material.STONE_SLAB, plainsVillagePopulator.cobblestoneSlab, Material.ANDESITE_SLAB);
             target.getDown().downUntilSolid(random, plainsVillagePopulator.woodLog);
         }
 

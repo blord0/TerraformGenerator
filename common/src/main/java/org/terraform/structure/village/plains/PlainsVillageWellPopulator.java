@@ -111,8 +111,8 @@ public class PlainsVillageWellPopulator extends PlainsVillageAbstractRoomPopulat
             for (int nx = -3; nx <= 3; nx++) {
                 for (int nz = -3; nz <= 3; nz++) {
                     Wall target = new Wall(core.getRelative(nx, -1, nz));
-                    if (target.getType() == Material.COBBLESTONE || target.getType() == Material.MOSSY_COBBLESTONE) {
-                        target.getDown().downUntilSolid(rand, Material.COBBLESTONE, Material.MOSSY_COBBLESTONE);
+                    if (target.getType() == plainsVillagePopulator.cobblestone || target.getType() == plainsVillagePopulator.mossyCobblestone) {
+                        target.getDown().downUntilSolid(rand, plainsVillagePopulator.cobblestone, plainsVillagePopulator.mossyCobblestone);
                     }
                 }
             }
@@ -160,10 +160,10 @@ public class PlainsVillageWellPopulator extends PlainsVillageAbstractRoomPopulat
             if (data.getMaterial().toString().contains("COBBLESTONE")) {
                 data = Bukkit.createBlockData(data.getAsString().replaceAll("cobblestone",
                         GenUtils.randChoice(rand,
-                                Material.COBBLESTONE,
-                                Material.COBBLESTONE,
-                                Material.COBBLESTONE,
-                                Material.MOSSY_COBBLESTONE
+                                plainsVillagePopulator.cobblestone,
+                                plainsVillagePopulator.cobblestone,
+                                plainsVillagePopulator.cobblestone,
+                                plainsVillagePopulator.mossyCobblestone
                         ).toString().toLowerCase(Locale.ENGLISH)
                 ));
                 super.applyData(block, data);

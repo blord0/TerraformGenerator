@@ -41,43 +41,43 @@ public class PlainsVillageForgeWallPiece extends PlainsVillageForgePiece {
             SimpleEntry<Wall, Integer> entry = this.getRoom().getWall(data, getRotation().getOppositeFace(), 0);
             Wall w = entry.getKey().getDown();
             for (int i = 0; i < entry.getValue(); i++) {
-                w.getDown().downUntilSolid(rand, Material.COBBLESTONE, Material.MOSSY_COBBLESTONE);
-                w.RPillar(5, rand, Material.COBBLESTONE, Material.ANDESITE, Material.STONE);
+                w.getDown().downUntilSolid(rand, plainsVillagePopulator.cobblestone, plainsVillagePopulator.mossyCobblestone);
+                w.RPillar(5, rand, plainsVillagePopulator.cobblestone, Material.ANDESITE, Material.STONE);
 
                 // Handle window hole placement
                 if (i == 2) { // Center
                     w.getUp(2).setType(Material.AIR);
-                    new SlabBuilder(Material.COBBLESTONE_SLAB,
+                    new SlabBuilder(plainsVillagePopulator.cobblestoneSlab,
                             Material.ANDESITE_SLAB,
                             Material.STONE_SLAB,
-                            Material.STONE_BRICK_SLAB).setType(Type.TOP).apply(w.getUp(3).getFront());
+                            plainsVillagePopulator.stoneBrickSlab).setType(Type.TOP).apply(w.getUp(3).getFront());
 
-                    new StairBuilder(Material.COBBLESTONE_STAIRS,
+                    new StairBuilder(plainsVillagePopulator.cobblestoneStairs,
                             Material.ANDESITE_STAIRS,
                             Material.STONE_STAIRS,
-                            Material.STONE_BRICK_STAIRS).setFacing(w.getDirection().getOppositeFace())
+                            plainsVillagePopulator.stoneBrickStairs).setFacing(w.getDirection().getOppositeFace())
                                                         .apply(w.getUp().getFront());
 
-                    w.getFront().downUntilSolid(rand, Material.COBBLESTONE, Material.MOSSY_COBBLESTONE);
+                    w.getFront().downUntilSolid(rand, plainsVillagePopulator.cobblestone, plainsVillagePopulator.mossyCobblestone);
                 }
                 else if (i == 1 || i == 3) { // Beside the opening
                     w.getUp(3)
                      .getFront()
-                     .setType(Material.COBBLESTONE_SLAB,
+                     .setType(plainsVillagePopulator.cobblestoneSlab,
                              Material.ANDESITE_SLAB,
                              Material.STONE_SLAB,
-                             Material.STONE_BRICK_SLAB);
+                             plainsVillagePopulator.stoneBrickSlab);
                     w.getUp(2)
                      .getFront()
-                     .setType(Material.COBBLESTONE_WALL, Material.STONE_BRICK_WALL, Material.ANDESITE_WALL);
+                     .setType(plainsVillagePopulator.cobblestoneWall, plainsVillagePopulator.stoneBrickWall, Material.ANDESITE_WALL);
 
                     // Stair decor
                     if (i == 1) {
                         new StairBuilder(
-                                Material.COBBLESTONE_STAIRS,
+                                plainsVillagePopulator.cobblestoneStairs,
                                 Material.ANDESITE_STAIRS,
                                 Material.STONE_STAIRS,
-                                Material.STONE_BRICK_STAIRS
+                                plainsVillagePopulator.stoneBrickStairs
                         ).setFacing(BlockUtils.getRight(w.getDirection()))
                          .apply(w.getUp(2))
                          .setFacing(BlockUtils.getLeft(w.getDirection()))
@@ -86,10 +86,10 @@ public class PlainsVillageForgeWallPiece extends PlainsVillageForgePiece {
                     }
                     else {
                         new StairBuilder(
-                                Material.COBBLESTONE_STAIRS,
+                                plainsVillagePopulator.cobblestoneStairs,
                                 Material.ANDESITE_STAIRS,
                                 Material.STONE_STAIRS,
-                                Material.STONE_BRICK_STAIRS
+                                plainsVillagePopulator.stoneBrickStairs
                         ).setFacing(BlockUtils.getLeft(w.getDirection()))
                          .apply(w.getUp(2))
                          .setFacing(BlockUtils.getRight(w.getDirection()))
@@ -107,11 +107,11 @@ public class PlainsVillageForgeWallPiece extends PlainsVillageForgePiece {
             SimpleEntry<Wall, Integer> entry = this.getRoom().getWall(data, getRotation().getOppositeFace(), 0);
             Wall w = entry.getKey();
             for (int i = 0; i < entry.getValue(); i++) {
-                w.getDown(2).downUntilSolid(rand, Material.COBBLESTONE, Material.MOSSY_COBBLESTONE);
+                w.getDown(2).downUntilSolid(rand, plainsVillagePopulator.cobblestone, plainsVillagePopulator.mossyCobblestone);
 
                 if (i == 2) {
                     w.getDown().Pillar(2, rand, plainsVillagePopulator.woodLog);
-                    w.getUp().setType(Material.STONE_SLAB, Material.COBBLESTONE_SLAB, Material.ANDESITE_SLAB);
+                    w.getUp().setType(Material.STONE_SLAB, plainsVillagePopulator.cobblestoneSlab, Material.ANDESITE_SLAB);
                 }
                 else {
                     w.get().lsetType(plainsVillagePopulator.woodFence);

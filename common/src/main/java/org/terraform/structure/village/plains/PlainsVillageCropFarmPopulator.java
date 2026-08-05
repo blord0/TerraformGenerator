@@ -243,7 +243,7 @@ public class PlainsVillageCropFarmPopulator extends PlainsVillageAbstractRoomPop
     private void setScareCrow(@NotNull PopulatorDataAbstract data, int x, int y, int z) {
         BlockFace facing = BlockUtils.getDirectBlockFace(rand);
         Wall w = new Wall(new SimpleBlock(data, x, y, z), facing);
-        w.setType(Material.COBBLESTONE, Material.MOSSY_COBBLESTONE);
+        w.setType(plainsVillagePopulator.cobblestone, plainsVillagePopulator.mossyCobblestone);
         w.getUp().setType(plainsVillagePopulator.woodFence);
         w.getUp(2).setType(plainsVillagePopulator.woodFence);
         w.getLeft().getUp(2).setType(plainsVillagePopulator.woodFence);

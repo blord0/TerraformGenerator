@@ -38,7 +38,7 @@ public class PlainsVillageForgeChimneyPiece extends PlainsVillageForgeStandardPi
         }
 
         if (this.getWalledFaces().size() == 1) {
-            if (core.getRelative(this.getWalledFaces().get(0), 3).getType() == Material.CHISELED_STONE_BRICKS) {
+            if (core.getRelative(this.getWalledFaces().get(0), 3).getType() == plainsVillagePopulator.chiseledStoneBrick) {
                 spawnStraightChimney(random, new Wall(core));
                 return;
             }
@@ -48,7 +48,7 @@ public class PlainsVillageForgeChimneyPiece extends PlainsVillageForgeStandardPi
         for (BlockFace face : walledFaces) {
 
             // Don't spawn walled chimney against entrance
-            if (core.getRelative(face, 3).getType() == Material.CHISELED_STONE_BRICKS) {
+            if (core.getRelative(face, 3).getType() == plainsVillagePopulator.chiseledStoneBrick) {
                 continue;
             }
 
@@ -72,87 +72,87 @@ public class PlainsVillageForgeChimneyPiece extends PlainsVillageForgeStandardPi
 
         for (BlockFace face : BlockUtils.xzDiagonalPlaneBlockFaces) {
             Wall target = core.getRelative(face);
-            target.Pillar(chimneyCoreHeight + 1, true, random, Material.COBBLESTONE_WALL, Material.COBBLESTONE);
+            target.Pillar(chimneyCoreHeight + 1, true, random, plainsVillagePopulator.cobblestoneWall, plainsVillagePopulator.cobblestone);
             target.CorrectMultipleFacing(chimneyCoreHeight + 1);
         }
 
         for (BlockFace face : BlockUtils.directBlockFaces) {
 
 
-            core.getRelative(face).setType(Material.COBBLESTONE);
+            core.getRelative(face).setType(plainsVillagePopulator.cobblestone);
 
             for (int i = 0; i < chimneyCoreHeight; i++) {
                 if (i % 2 == 0) {
                     new StairBuilder(
-                            Material.COBBLESTONE_STAIRS,
-                            Material.MOSSY_COBBLESTONE_STAIRS
+                            plainsVillagePopulator.cobblestoneStairs,
+                            plainsVillagePopulator.mossyCobblestoneStairs
                     ).setFacing(face.getOppositeFace()).apply(core.getRelative(0, 2 + i, 0).getRelative(face));
                 }
                 else {
                     core.getRelative(0, 2 + i, 0)
                         .getRelative(face)
-                        .setType(Material.COBBLESTONE, Material.MOSSY_COBBLESTONE);
+                        .setType(plainsVillagePopulator.cobblestone, plainsVillagePopulator.mossyCobblestone);
                 }
             }
 
             if (face == core.getDirection()) { // Front
-                new StairBuilder(Material.COBBLESTONE_STAIRS).setFacing(face.getOppositeFace())
+                new StairBuilder(plainsVillagePopulator.cobblestoneStairs).setFacing(face.getOppositeFace())
                                                              .apply(core.getFront(2).getLeft())
                                                              .apply(core.getFront(2).getRight());
-                core.getFront().getLeft().setType(Material.COBBLESTONE);
-                core.getFront().getRight().setType(Material.COBBLESTONE);
+                core.getFront().getLeft().setType(plainsVillagePopulator.cobblestone);
+                core.getFront().getRight().setType(plainsVillagePopulator.cobblestone);
 
             }
             else if (face != core.getDirection().getOppositeFace()) // Sides
             {
-                new StairBuilder(Material.COBBLESTONE_STAIRS).setFacing(face.getOppositeFace())
+                new StairBuilder(plainsVillagePopulator.cobblestoneStairs).setFacing(face.getOppositeFace())
                                                              .apply(core.getRelative(face, 2));
             }
 
             else { // Walled face
-                new StairBuilder(Material.COBBLESTONE_STAIRS).setFacing(face.getOppositeFace())
+                new StairBuilder(plainsVillagePopulator.cobblestoneStairs).setFacing(face.getOppositeFace())
                                                              .apply(core.getRelative(face, 2))
                                                              .setHalf(Half.TOP)
                                                              .apply(core.getUp(2).getRelative(face, 2));
 
 
                 // Modify the exterior.
-                core.getRelative(face, 2).getUp(3).Pillar(2, random, Material.COBBLESTONE, Material.MOSSY_COBBLESTONE);
+                core.getRelative(face, 2).getUp(3).Pillar(2, random, plainsVillagePopulator.cobblestone, plainsVillagePopulator.mossyCobblestone);
 
                 core.getRelative(face, 2)
                     .getLeft()
                     .getDown()
-                    .Pillar(6, random, Material.COBBLESTONE, Material.MOSSY_COBBLESTONE);
+                    .Pillar(6, random, plainsVillagePopulator.cobblestone, plainsVillagePopulator.mossyCobblestone);
 
                 core.getRelative(face, 2)
                     .getRight()
                     .getDown()
-                    .Pillar(6, random, Material.COBBLESTONE, Material.MOSSY_COBBLESTONE);
+                    .Pillar(6, random, plainsVillagePopulator.cobblestone, plainsVillagePopulator.mossyCobblestone);
 
-                new StairBuilder(Material.COBBLESTONE_STAIRS).setFacing(BlockUtils.getLeft(face))
+                new StairBuilder(plainsVillagePopulator.cobblestoneStairs).setFacing(BlockUtils.getLeft(face))
                                                              .apply(core.getRelative(face, 2).getUp(4).getLeft())
                                                              .setFacing(BlockUtils.getRight(face))
                                                              .apply(core.getRelative(face, 2).getUp(4).getRight());
 
-                core.getRelative(face, 2).getUp(5).setType(Material.COBBLESTONE_SLAB, Material.MOSSY_COBBLESTONE_SLAB);
+                core.getRelative(face, 2).getUp(5).setType(plainsVillagePopulator.cobblestoneSlab, plainsVillagePopulator.mossyCobblestoneSlab);
 
                 // This will be the base
                 core.getRelative(face, 2)
                     .getDown(2)
                     .getLeft()
-                    .downUntilSolid(random, Material.COBBLESTONE, Material.MOSSY_COBBLESTONE);
+                    .downUntilSolid(random, plainsVillagePopulator.cobblestone, plainsVillagePopulator.mossyCobblestone);
                 core.getRelative(face, 2)
                     .getDown()
-                    .downUntilSolid(random, Material.COBBLESTONE, Material.MOSSY_COBBLESTONE);
+                    .downUntilSolid(random, plainsVillagePopulator.cobblestone, plainsVillagePopulator.mossyCobblestone);
                 core.getRelative(face, 2)
                     .getDown(2)
                     .getRight()
-                    .downUntilSolid(random, Material.COBBLESTONE, Material.MOSSY_COBBLESTONE);
+                    .downUntilSolid(random, plainsVillagePopulator.cobblestone, plainsVillagePopulator.mossyCobblestone);
 
                 // Solidify the wall behind
-                core.getRelative(face).Pillar(6, random, Material.COBBLESTONE, Material.MOSSY_COBBLESTONE);
-                core.getRelative(face).getLeft().Pillar(6, random, Material.COBBLESTONE, Material.MOSSY_COBBLESTONE);
-                core.getRelative(face).getRight().Pillar(6, random, Material.COBBLESTONE, Material.MOSSY_COBBLESTONE);
+                core.getRelative(face).Pillar(6, random, plainsVillagePopulator.cobblestone, plainsVillagePopulator.mossyCobblestone);
+                core.getRelative(face).getLeft().Pillar(6, random, plainsVillagePopulator.cobblestone, plainsVillagePopulator.mossyCobblestone);
+                core.getRelative(face).getRight().Pillar(6, random, plainsVillagePopulator.cobblestone, plainsVillagePopulator.mossyCobblestone);
             }
 
             // Iron bars placed last.
@@ -179,27 +179,27 @@ public class PlainsVillageForgeChimneyPiece extends PlainsVillageForgeStandardPi
         int chimneyCoreHeight = random.nextInt(3) + 6;
         for (BlockFace face : BlockUtils.directBlockFaces) {
 
-            core.getRelative(face).setType(Material.COBBLESTONE);
+            core.getRelative(face).setType(plainsVillagePopulator.cobblestone);
             core.getUp().getRelative(face).setType(Material.IRON_BARS);
 
             for (int i = 0; i < chimneyCoreHeight; i++) {
                 if (i % 2 == 0) {
                     new StairBuilder(
-                            Material.COBBLESTONE_STAIRS,
-                            Material.MOSSY_COBBLESTONE_STAIRS
+                            plainsVillagePopulator.cobblestoneStairs,
+                            plainsVillagePopulator.mossyCobblestoneStairs
                     ).setFacing(face.getOppositeFace()).apply(core.getRelative(0, 2 + i, 0).getRelative(face));
                 }
                 else {
                     core.getRelative(0, 2 + i, 0)
                         .getRelative(face)
-                        .setType(Material.COBBLESTONE, Material.MOSSY_COBBLESTONE);
+                        .setType(plainsVillagePopulator.cobblestone, plainsVillagePopulator.mossyCobblestone);
                 }
             }
         }
 
         for (BlockFace face : BlockUtils.xzDiagonalPlaneBlockFaces) {
             Wall target = core.getRelative(face);
-            target.Pillar(chimneyCoreHeight + 1, true, random, Material.COBBLESTONE_WALL, Material.COBBLESTONE);
+            target.Pillar(chimneyCoreHeight + 1, true, random, plainsVillagePopulator.cobblestoneWall, plainsVillagePopulator.cobblestone);
             target.CorrectMultipleFacing(chimneyCoreHeight + 1);
         }
 
