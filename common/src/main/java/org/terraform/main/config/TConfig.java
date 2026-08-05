@@ -105,6 +105,8 @@ public class TConfig extends YamlFileInterface {
     public float BIOME_MOUNTAINOUS_CONNECTOR_MOUNT_MULT = 1.7f;
     @YamlKey("biome.highmountains-threshold")
     public float BIOME_HIGH_MOUNTAINOUS_THRESHOLD = 20.5f;
+    @YamlKey("biome.hotbarren-mountain-rarity-multiplier")
+    public double BIOME_HOTBARREN_MOUNTAIN_RARITY_MULTIPLIER = 4d;
     @YamlKey("biome.mountainous-frequency")
     public double BIOME_MOUNTAINOUS_FREQUENCY = 0.1d;
     @YamlKey("biome.oceanic-frequency")

@@ -684,6 +684,11 @@ public enum BiomeBank {
         else {
             // If it isn't an ocean, mountains may be plausible.
             double mountainousNoise = section.getMountainLevel();
+            if (climate == BiomeClimate.HOT_BARREN) {
+                // Desert-type climates need proportionally stronger noise to
+                // qualify as mountainous, making them rarer there specifically.
+                mountainousNoise /= TConfig.c.BIOME_HOTBARREN_MOUNTAIN_RARITY_MULTIPLIER;
+            }
             if (mountainousNoise > 0) {
                 if (mountainousNoise >= TConfig.c.BIOME_HIGH_MOUNTAINOUS_THRESHOLD) {
                     targetType = BiomeType.HIGH_MOUNTAINOUS;
