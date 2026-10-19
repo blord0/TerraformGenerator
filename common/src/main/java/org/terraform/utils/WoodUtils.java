@@ -2,8 +2,9 @@ package org.terraform.utils;
 
 import org.bukkit.Material;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.terraform.biome.BiomeBank;
+import org.terraform.utils.version.V_26_3;
+import org.terraform.utils.version.Version;
 
 import java.util.Objects;
 
@@ -23,12 +24,14 @@ public class WoodUtils {
             case SANDY_BEACH, JUNGLE, JUNGLE_RIVER, BAMBOO_FOREST -> wood.getWood(WoodSpecies.JUNGLE);
             case BLACK_OCEAN, DEEP_BLACK_OCEAN, CHERRY_GROVE, DARK_FOREST, DARK_FOREST_RIVER, DARK_FOREST_BEACH ->
                     wood.getWood(WoodSpecies.DARK_OAK);
+            case PALE_FOREST -> wood.getWood(WoodSpecies.PALE_OAK);
+            case DAPPLED_FOREST, DAPPLEDFOREST_BEACH ->  wood.getWood(WoodSpecies.POPLAR);
             default -> wood.getWood(WoodSpecies.OAK);
         };
     }
 
     public enum WoodSpecies {
-        OAK, SPRUCE, BIRCH, JUNGLE, ACACIA, DARK_OAK
+        OAK, SPRUCE, BIRCH, JUNGLE, ACACIA, DARK_OAK, PALE_OAK, POPLAR
     }
 
     public enum WoodType {
@@ -74,6 +77,19 @@ public class WoodUtils {
         // I am the pinnacle of optimisation
         // Fear my absolutely unbeatable timings
         public @NotNull Material getWood(@NotNull WoodSpecies species) {
+            //If you don't handle these, they will bubble into a bad getMaterial.
+            if(species == WoodSpecies.PALE_OAK
+               && !Version.VERSION.isAtLeast(Version.v1_21_4))
+                species = WoodSpecies.DARK_OAK;
+
+            if(species == WoodSpecies.POPLAR
+               && !Version.VERSION.isAtLeast(Version.v26_3))
+                species = WoodSpecies.BIRCH;
+
+            //Poplar has no plain POPLAR_LEAVES, only coloured variants
+            if(this == LEAVES && species == WoodSpecies.POPLAR)
+                return V_26_3.YELLOW_POPLAR_LEAVES;
+
             //This cannot be null
             return Objects.requireNonNull(Material.getMaterial(template.replace("%WOOD%", species.toString())));
         }

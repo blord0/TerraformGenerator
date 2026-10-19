@@ -30,7 +30,7 @@ public class SulfurNoiseClusterPopulator extends AbstractNoiseClusterPopulator{
     @Override
     public boolean canSpawnCluster(TerraformWorld tw, int x, int y, int z) {
 
-        FastNoise thresholdNoise = NoiseCacheHandler.getNoise(tw, NoiseCacheHandler.NoiseCacheEntry.BIOME_CAVE_SULFUR_THRESNOISE, world -> {
+        FastNoise thresholdNoise = NoiseCacheHandler.getNoise(tw, NoiseCacheHandler.NoiseCacheEntry.BIOME_CAVE_SULFUR_THRESHNOISE, world -> {
             FastNoise n = new FastNoise((int) (tw.getSeed() ^ 183127902));
             n.SetNoiseType(FastNoise.NoiseType.Simplex);
             n.SetFrequency(TConfig.c.BIOME_CAVE_SULFUR_FREQUENCY);
@@ -52,12 +52,6 @@ public class SulfurNoiseClusterPopulator extends AbstractNoiseClusterPopulator{
         // =========================
 
         int caveHeight = ceil.getY() - floor.getY();
-
-        // This seems to be a legacy check that doesn't need to be done anymore.
-        // Check in game if this is an issue.
-        //if (Tag.SLABS.isTagged(floor.getType()) || Tag.WALLS.isTagged(floor.getType())) {
-        //    floor = floor.getDown();
-        //}
 
         //Cheap out and do 2D noise. We will see if that's noticeable in-game
         var noiseGen = NoiseCacheHandler.getNoise(tw,

@@ -83,6 +83,10 @@ public class SimpleBlock {
         // this.data = b.getBlockData().getAsString();
     }
 
+    public CoordPair xzCoordPair(){
+        return new CoordPair(this.x, this.z);
+    }
+
     public void pathTowards(int width, int maxLength, @NotNull SimpleBlock target, Material... types) {
         BlockFace dir = BlockFace.NORTH;
         int max = -1;
@@ -238,7 +242,7 @@ public class SimpleBlock {
     }
 
     public void addEntity(EntityType type) {
-        popData.addEntity(x, y, z, type);
+        popData.addEntity(x+0.5f, y, z+0.5f, type);
     }
 
 
@@ -265,9 +269,10 @@ public class SimpleBlock {
         return false;
     }
 
-    public void replaceAdjacentNonLiquids(BlockFace @NotNull [] faces, Material liquid, Material... types) {
+    public void replaceAdjacentNonLiquids(BlockFace @NotNull [] faces, boolean alsoReplaceSolids, Material liquid, Material... types) {
         for (BlockFace face : faces) {
-            if (!getRelative(face).isSolid() && getRelative(face).getType() != liquid) {
+            if ((alsoReplaceSolids || !getRelative(face).isSolid())
+                && getRelative(face).getType() != liquid) {
                 getRelative(face).setType(types);
             }
         }

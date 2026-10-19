@@ -8,6 +8,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.StructureGrowEvent;
 import org.jetbrains.annotations.NotNull;
+import org.terraform.biome.flat.DappledForestHandler;
 import org.terraform.biome.flat.PaleForestHandler;
 import org.terraform.coregen.bukkit.TerraformGenerator;
 import org.terraform.coregen.populatordata.PopulatorDataPostGen;
@@ -17,8 +18,12 @@ import org.terraform.main.config.TConfig;
 import org.terraform.utils.GenUtils;
 import org.terraform.utils.version.V_1_20;
 import org.terraform.utils.version.V_1_21_4;
+import org.terraform.utils.version.V_26_3;
+import org.terraform.utils.version.Version;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class SaplingOverrider implements Listener {
 
@@ -140,6 +145,22 @@ public class SaplingOverrider implements Listener {
                                     new PaleForestHandler().paleTreeMutator(nt);
                                 })
                             );
+                    return;
+                }
+                if(Version.VERSION.isAtLeast(Version.v26_3))
+                    if (Set.of(V_26_3.RED_POPLAR_LEAVES,
+                               V_26_3.ORANGE_POPLAR_LEAVES,
+                               V_26_3.YELLOW_POPLAR_LEAVES)
+                           .contains(baseBlock.getType())) {
+                        FractalTypes.Tree.NORMAL_SMALL
+                                .build(
+                                        tw,
+                                        new SimpleBlock(data, x, y, z),
+                                        (nt -> {
+                                            nt.setCheckGradient(false);
+                                            DappledForestHandler.PoplarMutator(nt);
+                                        })
+                                );
                     return;
                 }
                 // Not handled by TG

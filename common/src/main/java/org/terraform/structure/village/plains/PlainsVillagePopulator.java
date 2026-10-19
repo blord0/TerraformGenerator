@@ -180,7 +180,7 @@ public class PlainsVillagePopulator extends VillagePopulator {
         woodPressurePlate = WoodUtils.getWoodForBiome(biome, WoodType.PRESSURE_PLATE);
         woodDoor = WoodUtils.getWoodForBiome(biome, WoodType.DOOR);
         woodLeaves = WoodUtils.getWoodForBiome(biome, WoodType.LEAVES);
-        wood = woodLeaves.toString().toLowerCase(Locale.ENGLISH).replace("leaves", "");
+        wood = woodPlank.toString().toLowerCase(Locale.ENGLISH).replace("planks", "");
 
         stoneBrick = StoneUtils.getStoneForBiome(biome, StoneType.BRICK);
         mossyStoneBrick = StoneUtils.getStoneForBiome(biome, StoneType.MOSSY_BRICK);

@@ -18,9 +18,14 @@ public class TConfig extends YamlFileInterface {
 
     // -=[HEIGHTMAP]=-
     @YamlKey("heightmap.core-frequency")
+    @YamlComment("A higher core frequency causes land height to vary in shorter distance.")
     public float HEIGHT_MAP_CORE_FREQUENCY = 0.003f;
     @YamlKey("heightmap.river-frequency")
+    @YamlComment("A higher frequency means thinner, but closer rivers.")
     public float HEIGHT_MAP_RIVER_FREQUENCY = 0.005f;
+    @YamlKey("heightmap.rivers-enabled")
+    @YamlComment("Set to false to disable rivers entirely.")
+    public boolean HEIGHT_MAP_RIVERS_ENABLED = true;
     @YamlKey("heightmap.land-height-amplifier")
     public float HEIGHT_MAP_LAND_HEIGHT_AMPLIFIER = 1f;
     @YamlKey("heightmap.sea-level")
@@ -133,21 +138,27 @@ public class TConfig extends YamlFileInterface {
     public int BIOME_CAVE_DRIPSTONECLUSTER_MINSIZE = 5;
     @YamlKey("biome.cave.dripstone-cluster.maxsize")
     public int BIOME_CAVE_DRIPSTONECLUSTER_MAXSIZE = 11;
+
+    @YamlComment("Decrease the number to make lush caves smaller")
+    @YamlKey("biome.cave.lush-cluster.threshold")
+    public float BIOME_CAVE_LUSH_THRESHOLD = 0.68f;
+
+    @YamlComment("Decrease the number to make lush caves more spaced out AND bigger")
+    @YamlKey("biome.cave.lush-cluster.frequency")
+    public float BIOME_CAVE_LUSH_FREQUENCY = 0.010f;
+
+    @YamlComment("Decrease the number to make sulfur caves smaller")
     @YamlKey("biome.cave.sulfur-cluster.threshold")
     public float BIOME_CAVE_SULFUR_THRESHOLD = 0.8f;
+
+    @YamlComment("Decrease the number to make sulfur caves more spaced out AND bigger")
     @YamlKey("biome.cave.sulfur-cluster.frequency")
     public float BIOME_CAVE_SULFUR_FREQUENCY = 0.0015f;
+
     @YamlComment("Chance for a sulfur spring to spawn for each block. Bounded between 0 and 1")
     @YamlKey("biome.cave.sulfur-cluster.spring-chance")
     public double BIOME_CAVE_SULFUR_SPRING_CHANCE = 0.002f;
-    @YamlKey("biome.cave.lush-cluster.separation")
-    public int BIOME_CAVE_LUSHCLUSTER_SEPARATION = 64;
-    @YamlKey("biome.cave.lush-cluster.separation-maxpertub")
-    public double BIOME_CAVE_LUSHCLUSTER_MAXPERTUB = 0.35d;
-    @YamlKey("biome.cave.lush-cluster.minsize")
-    public int BIOME_CAVE_LUSHCLUSTER_MINSIZE = 10;
-    @YamlKey("biome.cave.lush-cluster.maxsize")
-    public int BIOME_CAVE_LUSHCLUSTER_MAXSIZE = 15;
+
     @YamlKey("biome.deep-oceanic-threshold")
     public float BIOME_DEEP_OCEANIC_THRESHOLD = 27f;
     @YamlKey("biome.dithering")
@@ -295,6 +306,8 @@ public class TConfig extends YamlFileInterface {
     public double BIOME_BADLANDS_PLATEAU_COMMONNESS = 0.18d;
     @YamlKey("biome.taiga.weight")
     public int BIOME_TAIGA_WEIGHT = 6;
+    @YamlKey("biome.dappledforest.weight")
+    public int BIOME_DAPPLEDFOREST_WEIGHT = 3;
     @YamlKey("biome.cherrygrove.weight")
     public int BIOME_CHERRYGROVE_WEIGHT = 3;
     @YamlKey("biome.scarletforest.weight")
@@ -331,6 +344,8 @@ public class TConfig extends YamlFileInterface {
     public boolean TREES_TAIGA_BIG_ENABLED = true;
     @YamlKey("trees.big-forest-trees.enabled")
     public boolean TREES_FOREST_BIG_ENABLED = true;
+    @YamlKey("trees.big-dappledforest-trees.enabled")
+    public boolean TREES_DAPPLEDFOREST_BIG_ENABLED = true;
     @YamlKey("trees.big-savanna-trees.enabled")
     public boolean TREES_SAVANNA_BIG_ENABLED = true;
     @YamlKey("trees.big-birch-trees.enabled")
@@ -353,8 +368,10 @@ public class TConfig extends YamlFileInterface {
     @YamlKey("misc.custom-small-trees-from-saplings.big-spruce-tree")
     public boolean MISC_SAPLING_CUSTOM_TREES_BIGTREES_SPRUCE = true;
     @YamlKey("misc.trees.only-use-logs-no-wood")
-    public boolean MISC_TREES_FORCE_LOGS = false;
+    @YamlComment("TerraformGenerator classically generates trees with the Wood block and not the Log block. This option overrides this behaviour to use logs instead.")
+    public boolean MISC_TREES_FORCE_LOGS = true;
     @YamlKey("misc.trees.ground-gradient-limit")
+    @YamlComment("The gradient refers to the steepness of the ground before tree generation is stopped. Higher gradient allows trees to generate in steeper slopes.")
     public double MISC_TREES_GRADIENT_LIMIT = 1.3d;
     @YamlKey("misc.use-slabs-to-smooth-terrain")
     public boolean MISC_USE_SLABS_TO_SMOOTH = true;
@@ -384,6 +401,13 @@ public class TConfig extends YamlFileInterface {
     @YamlKey("dev-stuff.vanilla-disable-locate")
     public boolean DEVSTUFF_VANILLA_LOCATE_DISABLE = false;
 
+    @YamlComment("DOES NOT CHANGE WORLD HEIGHT. This is a dev option for overriding height limits to work with height-changing datapacks.")
+    @YamlKey("dev-stuff.override-min-height")
+    public int DEVSTUFF_OVERRIDE_MINHEIGHT = -64;
+    @YamlComment("DOES NOT CHANGE WORLD HEIGHT. This is a dev option for overriding height limits to work with height-changing datapacks.")
+    @YamlKey("dev-stuff.override-max-height")
+    public int DEVSTUFF_OVERRIDE_MAXHEIGHT = 320;
+
     // -=[CAVES]=-
     @YamlKey("caves.allow-flooded-caves")
     public boolean CAVES_ALLOW_FLOODED_CAVES = true;
@@ -391,6 +415,14 @@ public class TConfig extends YamlFileInterface {
     @YamlComment("Bounded from 0.0 to 1.0. At 1.0, caves are completely blocked at a 200 block radius around each structure. Otherwise, caves gradually shrink towards large structures (even if they're on land). Does not apply to Strongholds.")
     @YamlKey("caves.structure-suppression-threshold")
     public float CAVES_STRUCTURE_SUPPRESSION_THRESHOLD = 0.5f;
+
+    @YamlComment("Controls the size of cave caverns underground. Make it even lower (more negative) to shrink caves and vice versa.")
+    @YamlKey("caves.noisecabves.cheesecave-threshold")
+    public float CAVES_NOISECAVES_CHEESECAVE_THRESHOLD = -0.3f;
+    @YamlComment("Controls the size of noise ravines. Make it even lower (more negative) to shrink noise ravines and vice versa.")
+    @YamlKey("caves.noisecabves.noiseravine-threshold")
+    public float CAVES_NOISECAVES_NOISERAVINE_THRESHOLD = -1.3f;
+
     // CAVES_ALLOW_FLOODED_RAVINES("caves.allow-flooded-ravines",true),
 
     @YamlComment("Frequency of the thin winding tunnels that link cave pockets together. Lower values = longer, more spaced-out tunnels.")
@@ -506,6 +538,12 @@ public class TConfig extends YamlFileInterface {
     public boolean STRUCTURES_RUINEDPORTAL_ENABLED = true;
     @YamlKey("structures.ruinedportal.count-per-megachunk")
     public int STRUCTURES_RUINEDPORTAL_COUNT_PER_MEGACHUNK = 1;
+    @YamlKey("structures.abandonedcamp.enabled")
+    public boolean STRUCTURES_ABANDONEDCAMP_ENABLED = true;
+    @YamlKey("structures.abandonedcamp.spawnratio")
+    public double STRUCTURES_ABANDONEDCAMP_SPAWNRATIO = 0.7d;
+    @YamlKey("structures.abandonedcamp.count-per-megachunk")
+    public int STRUCTURES_ABANDONEDCAMP_COUNT_PER_MEGACHUNK = 2;
     @YamlKey("structures.igloo.spawnratio")
     public double STRUCTURES_IGLOO_SPAWNRATIO = 0.8d;
     @YamlKey("structures.igloo.enabled")

@@ -2,14 +2,18 @@ package org.terraform.command;
 
 import org.bukkit.ChatColor;
 import org.bukkit.World;
+import org.bukkit.block.Biome;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.terraform.biome.cavepopulators.cluster.CaveClusterRegistry;
+import org.terraform.biome.cavepopulators.noisecluster.AbstractNoiseClusterPopulator;
+import org.terraform.biome.cavepopulators.noisecluster.LushNoiseClusterPopulator;
 import org.terraform.biome.cavepopulators.noisecluster.SulfurNoiseClusterPopulator;
 import org.terraform.command.contants.InvalidArgumentException;
 import org.terraform.command.contants.TerraCommand;
 import org.terraform.command.contants.TerraCommandArgument;
+import org.terraform.coregen.HeightMap;
 import org.terraform.data.CoordPair;
 import org.terraform.data.TerraformWorld;
 import org.terraform.main.LangOpt;
@@ -36,21 +40,21 @@ import java.util.concurrent.TimeUnit;
  * so none of them are BiomeBank entries and none can be found with
  * /terra locatebiome. This covers all five with the search strategy that
  * actually matches how each one decides where to spawn:
- *  - SULFUR: a noise-threshold pre-filter (SulfurNoiseClusterPopulator#canSpawnCluster)
+ *  - SULFUR/LUSH: a noise-threshold pre-filter (AbstractNoiseClusterPopulator#canSpawnCluster)
  *    narrows candidates for free, then each candidate chunk is actually
  *    generated and its real biome data is read back to confirm a genuine
- *    sulfur cave is there before reporting it - see verifyChunkForSulfur.
- *  - DRIPSTONE/LUSH/CRYSTALLINE: a deterministic per-chunk grid of candidate
+ *    cave of that biome is there before reporting it - see verifyChunkForBiome.
+ *  - DRIPSTONE/CRYSTALLINE: a deterministic per-chunk grid of candidate
  *    points (the same math MasterCavePopulatorDistributor#calculateClusterLocations
  *    uses), via CaveClusterRegistry.
  *  - DEEP_DARK: it only ever appears inside Ancient Cities, so this just
  *    delegates to the structure locator for AncientCityPopulator.
  *
- * DRIPSTONE/LUSH/CRYSTALLINE/DEEP_DARK results are approximate: a "found"
+ * DRIPSTONE/CRYSTALLINE/DEEP_DARK results are approximate: a "found"
  * location is one where the generator's own placement math says a cluster
  * is a candidate, not a guarantee that an explorable cave already exists
- * there - players still need to dig. SULFUR is the exception: its reported
- * location is verified against real generated world data.
+ * there - players still need to dig. SULFUR/LUSH are the exception: their reported
+ * locations are verified against real generated world data.
  */
 public class LocateCaveBiomeCommand extends TerraCommand {
 
@@ -63,12 +67,16 @@ public class LocateCaveBiomeCommand extends TerraCommand {
 
     private static final int GRID_SEARCH_CHUNK_RADIUS = 400;
 
+    // Sentinel for "no known Y". Cave hits can be at any height including negatives, so -1 isn't safe
+    private static final int UNKNOWN_Y = Integer.MIN_VALUE;
+
     private static final String APPROXIMATE_CAVEAT =
             " (unconfirmed, might not exist)";
     private static final String VERIFIED_CAVEAT =
             " (confirmed, guaranteed to exist)";
 
     private final SulfurNoiseClusterPopulator sulfurPopulator = new SulfurNoiseClusterPopulator();
+    private final LushNoiseClusterPopulator lushPopulator = new LushNoiseClusterPopulator();
 
     public LocateCaveBiomeCommand(TerraformGeneratorPlugin plugin, String... aliases) {
         super(plugin, aliases);
@@ -103,9 +111,9 @@ public class LocateCaveBiomeCommand extends TerraCommand {
         TerraformWorld tw = TerraformWorld.get(p.getWorld());
 
         switch (type) {
-            case SULFUR -> locateSulfur(sender, tw, p);
+            case SULFUR -> locateNoiseCluster(sender, tw, p, sulfurPopulator, V_26_2.SULFUR_CAVES, "Sulfur Caves", true);
             case DRIPSTONE -> locateGridCluster(sender, tw, p, CaveClusterRegistry.DRIPSTONE, "Dripstone Caves");
-            case LUSH -> locateGridCluster(sender, tw, p, CaveClusterRegistry.LUSH, "Lush Caves");
+            case LUSH -> locateNoiseCluster(sender, tw, p, lushPopulator, Biome.LUSH_CAVES, "Lush Caves", false);
             case CRYSTALLINE -> locateGridCluster(sender, tw, p, CaveClusterRegistry.CRYSTALLINE, "Crystalline Cluster");
             case DEEP_DARK -> locateDeepDark(sender, tw, p);
         }
@@ -124,15 +132,22 @@ public class LocateCaveBiomeCommand extends TerraCommand {
     }
 
     // =========================
-    // SULFUR - noise cluster
+    // SULFUR / LUSH - noise clusters
     // =========================
 
-    private void locateSulfur(@NotNull CommandSender sender, @NotNull TerraformWorld tw, @NotNull Player p) {
-        if (!Version.VERSION.isAtLeast(Version.v26_2)
+    private void locateNoiseCluster(@NotNull CommandSender sender,
+                                    @NotNull TerraformWorld tw,
+                                    @NotNull Player p,
+                                    @NotNull AbstractNoiseClusterPopulator populator,
+                                    @NotNull Biome targetBiome,
+                                    @NotNull String biomeName,
+                                    boolean requires26_2)
+    {
+        if ((requires26_2 && !Version.VERSION.isAtLeast(Version.v26_2))
             || !TConfig.areCavesEnabled()
             || !TConfig.c.FEATURE_CAVEDECORATORS_ENABLED)
         {
-            sender.sendMessage(LangOpt.COMMAND_LOCATECAVEBIOME_DISABLED.parse("%biome%", "Sulfur Caves"));
+            sender.sendMessage(LangOpt.COMMAND_LOCATECAVEBIOME_DISABLED.parse("%biome%", biomeName));
             return;
         }
 
@@ -146,12 +161,12 @@ public class LocateCaveBiomeCommand extends TerraCommand {
 
         TerraformGeneratorPlugin.taskScheduler.execAsync(() -> {
             long startTime = System.currentTimeMillis();
-            int[] loc = searchAndVerifySulfurCluster(tw, world, startX, startZ);
+            int[] loc = searchAndVerifyNoiseCluster(tw, world, populator, targetBiome, biomeName, startX, startZ);
             reportResult(uuid,
-                    "Sulfur Caves",
+                    biomeName,
                     startTime,
                     loc == null ? null : new CoordPair(loc[0], loc[2]),
-                    loc == null ? -1 : loc[1],
+                    loc == null ? UNKNOWN_Y : loc[1],
                     tw,
                     VERIFIED_CAVEAT
             );
@@ -162,19 +177,26 @@ public class LocateCaveBiomeCommand extends TerraCommand {
      * Drives the outward spiral over the free noise pre-filter
      * (checkNoiseColumn), and for every column that passes it, actually
      * generates that one chunk and reads its real biome data back
-     * (verifyChunkForSulfur) to confirm a genuine sulfur cave is there.
+     * (verifyChunkForBiome) to confirm a genuine cave of targetBiome is there.
      * Noise false-positives (no real cave there, or a competing
-     * dripstone/lush/crystalline cluster won that column during real
-     * generation) are skipped in favor of the next candidate, up to
-     * MAX_VERIFY_ATTEMPTS real chunk generations.
+     * cluster won that column during real generation) are skipped in
+     * favor of the next candidate, up to MAX_VERIFY_ATTEMPTS real chunk
+     * generations.
      */
-    private int[] searchAndVerifySulfurCluster(@NotNull TerraformWorld tw, @NotNull World world, int centerX, int centerZ) {
+    private int[] searchAndVerifyNoiseCluster(@NotNull TerraformWorld tw,
+                                              @NotNull World world,
+                                              @NotNull AbstractNoiseClusterPopulator populator,
+                                              @NotNull Biome targetBiome,
+                                              @NotNull String biomeName,
+                                              int centerX,
+                                              int centerZ)
+    {
         Set<Long> verifiedChunks = new HashSet<>();
         int[] attempts = {0};
         int[][] found = {null};
 
         spiralColumns(centerX, centerZ, (x, z) -> {
-            int[] noiseHit = checkNoiseColumn(tw, x, z);
+            int[] noiseHit = checkNoiseColumn(tw, populator, x, z);
             if (noiseHit == null) {
                 return false;
             }
@@ -185,7 +207,7 @@ public class LocateCaveBiomeCommand extends TerraCommand {
             }
 
             attempts[0]++;
-            int[] verified = verifyChunkForSulfur(world, tw, noiseHit[0], noiseHit[2]);
+            int[] verified = verifyChunkForBiome(world, tw, targetBiome, biomeName, noiseHit[0], noiseHit[2]);
             if (verified != null) {
                 found[0] = verified;
                 return true;
@@ -203,14 +225,20 @@ public class LocateCaveBiomeCommand extends TerraCommand {
      * thread until that completes - safe since this always runs off the
      * async search task, never the main/region thread.
      */
-    private int[] verifyChunkForSulfur(@NotNull World world, @NotNull TerraformWorld tw, int x, int z) {
+    private int[] verifyChunkForBiome(@NotNull World world,
+                                      @NotNull TerraformWorld tw,
+                                      @NotNull Biome targetBiome,
+                                      @NotNull String biomeName,
+                                      int x,
+                                      int z)
+    {
         int chunkX = x >> 4;
         int chunkZ = z >> 4;
         CompletableFuture<int[]> future = new CompletableFuture<>();
 
         TerraformGeneratorPlugin.taskScheduler.execAsyncRegion(world, chunkX, chunkZ, () -> {
             try {
-                future.complete(scanChunkForSulfurBiome(world, tw, chunkX, chunkZ));
+                future.complete(scanChunkForBiome(world, tw, targetBiome, chunkX, chunkZ));
             }
             catch (Throwable t) {
                 future.completeExceptionally(t);
@@ -226,25 +254,30 @@ public class LocateCaveBiomeCommand extends TerraCommand {
         }
         catch (Exception e) {
             TerraformGeneratorPlugin.logger.error(
-                    "[LocateCaveBiome] Sulfur verification failed for chunk (" + chunkX + "," + chunkZ + "): " + e);
+                    "[LocateCaveBiome] " + biomeName + " verification failed for chunk (" + chunkX + "," + chunkZ + "): " + e);
             return null;
         }
     }
 
     /**
      * Must only be called from the region thread owning (chunkX, chunkZ) -
-     * i.e. from inside the execAsyncRegion callback in verifyChunkForSulfur.
+     * i.e. from inside the execAsyncRegion callback in verifyChunkForBiome.
      * Biomes are stored at 4-block (quart) resolution in modern Minecraft,
      * so stepping by 4 loses nothing - it's exactly the real storage
      * granularity, not an approximation.
      */
-    private int[] scanChunkForSulfurBiome(@NotNull World world, @NotNull TerraformWorld tw, int chunkX, int chunkZ) {
+    private int[] scanChunkForBiome(@NotNull World world,
+                                    @NotNull TerraformWorld tw,
+                                    @NotNull Biome targetBiome,
+                                    int chunkX,
+                                    int chunkZ)
+    {
         int baseX = chunkX << 4;
         int baseZ = chunkZ << 4;
         for (int y = tw.minY; y < tw.maxY; y += 4) {
             for (int dx = 0; dx < 16; dx += 4) {
                 for (int dz = 0; dz < 16; dz += 4) {
-                    if (world.getBiome(baseX + dx, y, baseZ + dz) == V_26_2.SULFUR_CAVES) {
+                    if (world.getBiome(baseX + dx, y, baseZ + dz) == targetBiome) {
                         return new int[]{baseX + dx, y, baseZ + dz};
                     }
                 }
@@ -292,10 +325,16 @@ public class LocateCaveBiomeCommand extends TerraCommand {
         }
     }
 
-    private int[] checkNoiseColumn(@NotNull TerraformWorld tw, int x, int z) {
+    private int[] checkNoiseColumn(@NotNull TerraformWorld tw,
+                                   @NotNull AbstractNoiseClusterPopulator populator,
+                                   int x,
+                                   int z)
+    {
         int minY = tw.minY + 32; // matches the cutoff MasterCavePopulatorDistributor uses for DeepCavePopulator
-        for (int y = minY; y < tw.maxY; y += NOISE_Y_STEP) {
-            if (sulfurPopulator.canSpawnCluster(tw, x, y, z)) {
+        // Cave clusters only exist underground, so noise hits above the surface are guaranteed false positives
+        int maxY = Math.min(tw.maxY, HeightMap.getBlockHeight(tw, x, z));
+        for (int y = minY; y < maxY; y += NOISE_Y_STEP) {
+            if (populator.canSpawnCluster(tw, x, y, z)) {
                 return new int[]{x, y, z};
             }
         }
@@ -303,7 +342,7 @@ public class LocateCaveBiomeCommand extends TerraCommand {
     }
 
     // =========================
-    // DRIPSTONE / LUSH / CRYSTALLINE - grid clusters
+    // DRIPSTONE / CRYSTALLINE - grid clusters
     // =========================
 
     private void locateGridCluster(@NotNull CommandSender sender,
@@ -326,7 +365,7 @@ public class LocateCaveBiomeCommand extends TerraCommand {
         TerraformGeneratorPlugin.taskScheduler.execAsync(() -> {
             long startTime = System.currentTimeMillis();
             CoordPair loc = searchGridCluster(tw, type, startChunkX, startChunkZ);
-            reportResult(uuid, displayName, startTime, loc, -1, tw);
+            reportResult(uuid, displayName, startTime, loc, UNKNOWN_Y, tw);
         });
     }
 
@@ -402,7 +441,7 @@ public class LocateCaveBiomeCommand extends TerraCommand {
         TerraformGeneratorPlugin.taskScheduler.execAsync(() -> {
             long startTime = System.currentTimeMillis();
             int[] coords = StructureLocator.locateSingleMegaChunkStructure(tw, startX, startZ, populator, -1);
-            reportResult(uuid, "Deep Dark", startTime, coords == null ? null : new CoordPair(coords[0], coords[1]), -1, tw);
+            reportResult(uuid, "Deep Dark", startTime, coords == null ? null : new CoordPair(coords[0], coords[1]), UNKNOWN_Y, tw);
         });
     }
 
@@ -433,7 +472,7 @@ public class LocateCaveBiomeCommand extends TerraCommand {
             return;
         }
 
-        int y = knownY >= 0 ? knownY : getHighestY(tw, loc.x(), loc.z());
+        int y = knownY != UNKNOWN_Y ? knownY : getHighestY(tw, loc.x(), loc.z());
 
         syncSendMessageTP(uuid,
                 "Locate " + displayName,
